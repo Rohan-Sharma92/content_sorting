@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -41,8 +42,7 @@ public class FileSplittingEnqueuer implements IFileProcessEnqueuer, IFileReaderQ
 			try {
 				return readerTask.call();
 			} catch (Exception e) {
-				e.printStackTrace();
-				return false;
+				throw new CompletionException(e);
 			}
 		}, fileSplittingPool).whenComplete((result, ex) -> {
 			this.isFileRead.getAndSet(result);
@@ -52,13 +52,11 @@ public class FileSplittingEnqueuer implements IFileProcessEnqueuer, IFileReaderQ
 			CompletableFuture<Void> completableFuture = CompletableFuture.<Void>supplyAsync(() -> {
 				FileSplitterTask writerTask = new FileSplitterTask(this, tempFileCache, config);
 				try {
-					writerTask.call();
+					return writerTask.call();
 				} catch (Exception e) {
-					e.printStackTrace();
+					throw new CompletionException(e);
 				}
-				return null;
-			}, fileSplittingPool).whenComplete((res, ex) -> {
-			});
+			}, fileSplittingPool);
 			futures.add(completableFuture);
 		}
 		return CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()])).thenApply(obj -> {

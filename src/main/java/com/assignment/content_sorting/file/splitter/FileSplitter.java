@@ -6,12 +6,9 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
-import javax.inject.Named;
-
-import com.assignment.content_sorting.file.cache.ITempFileCache;
+import com.assignment.content_sorting.file.factories.IFileSplittingEnqueuerFactory;
 import com.assignment.content_sorting.file.reader.IFileWrapper;
 import com.assignment.content_sorting.file.reader.InputFileWrapper;
 import com.assignment.content_sorting.properties.IServerConfig;
@@ -19,18 +16,15 @@ import com.assignment.content_sorting.service.IContentProcessor;
 import com.assignment.content_sorting.util.TimeMetric;
 import com.google.inject.Inject;
 
-public class FileSplitter implements IContentProcessor{
+public class FileSplitter implements IContentProcessor {
 
-	private final ITempFileCache tempFileCache;
-	private final ExecutorService executorService;
 	private final IServerConfig config;
+	private final IFileSplittingEnqueuerFactory fileSplittingEnqueuerFactory;
 
 	@Inject
-	public FileSplitter(final ITempFileCache tempFileCache,
-			final @Named("FileSplittingExecutor") ExecutorService executorService, final IServerConfig config) {
-		this.tempFileCache = tempFileCache;
-		this.executorService = executorService;
+	public FileSplitter(final IServerConfig config, final IFileSplittingEnqueuerFactory fileSplittingEnqueuerFactory) {
 		this.config = config;
+		this.fileSplittingEnqueuerFactory = fileSplittingEnqueuerFactory;
 	}
 
 	@Override
@@ -43,17 +37,16 @@ public class FileSplitter implements IContentProcessor{
 						return b.getFileSize() > a.getFileSize() ? 1 : 0;
 					}
 				}).collect(Collectors.toList());
-		List<CompletableFuture<IFileWrapper>> futures = wrappedFiles.stream()
-				.map(file -> process(file, executorService)).collect(Collectors.toList());
+		List<CompletableFuture<IFileWrapper>> futures = wrappedFiles.stream().map(file -> process(file))
+				.collect(Collectors.toList());
 		return CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[futures.size()]))
 				.whenComplete((result, ex) -> {
-					System.out.print("File splitted");
 					metric.print();
 				});
 	}
 
-	private CompletableFuture<IFileWrapper> process(IFileWrapper file, ExecutorService threadPool) {
-		IFileProcessEnqueuer fileProcessEnqueuer = new FileSplittingEnqueuer(threadPool, tempFileCache, config);
+	private CompletableFuture<IFileWrapper> process(IFileWrapper file) {
+		IFileProcessEnqueuer fileProcessEnqueuer = fileSplittingEnqueuerFactory.createFileSplittingExecutionRequest();
 		return fileProcessEnqueuer.enqueue(file);
 	}
 
