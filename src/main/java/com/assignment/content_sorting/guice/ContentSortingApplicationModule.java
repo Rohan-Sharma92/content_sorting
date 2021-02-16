@@ -9,6 +9,7 @@ import com.assignment.content_sorting.file.cache.ITempFileCache;
 import com.assignment.content_sorting.file.cache.TempFileCache;
 import com.assignment.content_sorting.file.factories.IFileSplittingEnqueuerFactory;
 import com.assignment.content_sorting.file.reader.IFileReaderQueueHandler;
+import com.assignment.content_sorting.file.sort.FileSorter;
 import com.assignment.content_sorting.file.splitter.FileSplitter;
 import com.assignment.content_sorting.file.splitter.FileSplittingEnqueuer;
 import com.assignment.content_sorting.file.splitter.IFileProcessEnqueuer;
@@ -35,6 +36,8 @@ public class ContentSortingApplicationModule extends AbstractModule {
 		bind(ITempFileCache.class).to(TempFileCache.class).in(Scopes.SINGLETON);
 		bind(IContentProcessor.class).annotatedWith(Names.named("FileSplitter")).to(FileSplitter.class)
 				.in(Scopes.SINGLETON);
+		bind(IContentProcessor.class).annotatedWith(Names.named("FileSorter")).to(FileSorter.class)
+		.in(Scopes.SINGLETON);
 		bind(IService.class).annotatedWith(Names.named("InitialisationService")).to(InitialisationService.class)
 				.in(Scopes.SINGLETON);
 		bind(IService.class).annotatedWith(Names.named("ContentService")).to(ContentSortingService.class)
