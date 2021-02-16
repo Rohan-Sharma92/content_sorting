@@ -3,33 +3,36 @@ package com.assignment.content_sorting.file.splitter;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.concurrent.Callable;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.assignment.content_sorting.file.cache.ITempFileCache;
+import com.assignment.content_sorting.file.common.IFileTask;
+import com.assignment.content_sorting.file.reader.IFileWrapper;
 import com.assignment.content_sorting.file.writer.FileWriterTask;
 import com.assignment.content_sorting.properties.IServerConfig;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 
-public class FileSplitterTask extends FileWriterTask implements Callable<Void> {
+public class FileSplitterTask extends FileWriterTask implements IFileTask<Void> {
 
 	private static final String TXT = ".txt";
-	private final IFileProcessEnqueuer fileProcessEnqueuer;
 	private final ITempFileCache tempFileCache;
 	private final IServerConfig config;
+	private final IFileWrapper fileWrapper;
 
-	public FileSplitterTask(final IFileProcessEnqueuer fileProcessEnqueuer, final ITempFileCache tempFileCache,
+	@Inject
+	public FileSplitterTask(@Assisted final IFileWrapper fileWrapper, final ITempFileCache tempFileCache,
 			final IServerConfig config) {
-		this.fileProcessEnqueuer = fileProcessEnqueuer;
 		this.tempFileCache = tempFileCache;
 		this.config = config;
+		this.fileWrapper = fileWrapper;
 	}
 
 	@Override
 	public Void call() throws Exception {
-		while (!fileProcessEnqueuer.isFileRead()
-				|| (fileProcessEnqueuer.isFileRead() && !fileProcessEnqueuer.isBufferEmpty())) {
-			String line = fileProcessEnqueuer.readLine();
+		while (!fileWrapper.isFileRead() || (fileWrapper.isFileRead() && !fileWrapper.isBufferEmpty())) {
+			String line = fileWrapper.readLine();
 			if (line != null) {
 				process(line);
 			}

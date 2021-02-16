@@ -4,16 +4,18 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.concurrent.Callable;
 
-public class FileReaderTask implements Callable<Boolean> {
+import com.assignment.content_sorting.file.common.IFileTask;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 
-	private final IFileReaderQueueHandler fileReaderQueueHandler;
+public class FileReaderTask implements IFileTask<Boolean> {
+
 	private final IFileWrapper fileWrapper;
 
-	public FileReaderTask(final IFileWrapper fileWrapper, final IFileReaderQueueHandler fileProcessEnqueuer) {
+	@Inject
+	public FileReaderTask(@Assisted final IFileWrapper fileWrapper) {
 		this.fileWrapper = fileWrapper;
-		this.fileReaderQueueHandler = fileProcessEnqueuer;
 	}
 
 	@Override
@@ -21,25 +23,24 @@ public class FileReaderTask implements Callable<Boolean> {
 		return readFile();
 	}
 
-	private Boolean readFile() {
+	private Boolean readFile() throws Exception {
 		BufferedReader bufferedReader = null;
 		try {
 			File file = fileWrapper.getFile();
-			//bufferedReader = Files.newBufferedReader(Paths.get(file.getAbsolutePath()));
 			bufferedReader = new BufferedReader(new FileReader(file));
 			String line;
 			while ((line = bufferedReader.readLine()) != null) {
-				this.fileReaderQueueHandler.addLinetoQueue(line);
+				this.fileWrapper.addLinetoQueue(line);
 			}
+			this.fileWrapper.markFileComplete();
 		} catch (IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw e;
 		} finally {
 			if (bufferedReader != null)
 				try {
 					bufferedReader.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					throw e;
 				}
 		}
 		return Boolean.TRUE;

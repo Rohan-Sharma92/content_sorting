@@ -8,7 +8,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Set;
 
-public class FileWriterTask {
+public class FileWriterTask{
 
 	  /**
      * Move files from source path to destine path

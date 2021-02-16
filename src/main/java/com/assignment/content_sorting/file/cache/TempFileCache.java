@@ -1,7 +1,10 @@
 package com.assignment.content_sorting.file.cache;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,8 +41,10 @@ public class TempFileCache implements ITempFileCache {
 	}
 
 	@Override
-	public Set<String> getTempFileNames() {
-		return this.tempFiles.keySet();
+	public List<String> getTempFileNames() {
+		LinkedList<String> orderedFileNames = new LinkedList<String>(tempFiles.keySet());
+		Collections.sort(orderedFileNames, ((a, b) -> a.compareTo(b)));
+		return orderedFileNames;
 	}
 
 	@Override

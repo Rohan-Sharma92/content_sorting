@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -27,6 +28,21 @@ public class FileSplitterTest {
 		config = new ServerConfig();
 		fileSplittingEnqueuerFactory = new MockFileSplittingEnqueuerFactory();
 		fileSplitter = new FileSplitter(config, fileSplittingEnqueuerFactory);
+		clearDir();
+	}
+	
+	@AfterMethod
+	public void afterTest() {
+		clearDir();
+	}
+
+	private void clearDir() {
+		File dir = Paths.get(config.getTempDirectory()).toFile();
+		if(dir.exists()) {
+			for(File f:dir.listFiles()) {
+				f.delete();
+			}
+		}
 	}
 
 	@Test

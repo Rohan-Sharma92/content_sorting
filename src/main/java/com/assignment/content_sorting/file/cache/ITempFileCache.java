@@ -1,6 +1,7 @@
 package com.assignment.content_sorting.file.cache;
 
 import java.io.File;
+import java.util.List;
 import java.util.Set;
 
 public interface ITempFileCache {
@@ -14,7 +15,7 @@ public interface ITempFileCache {
 
 	public void addToPrefixCache(File file);
 
-	public Set<String> getTempFileNames();
+	public List<String> getTempFileNames();
 
 	public Set<File> getFragmentedTempFiles(String name);
 
