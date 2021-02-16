@@ -28,7 +28,8 @@ public class FileSplitterTaskTest {
 	public void setup() {
 		tempFileCache = new TempFileCache();
 		HashMap<String, String> properties = new HashMap<>();
-		properties.put(ServerConfig.LISTEN,"test");
+		properties.put(ServerConfig.LISTEN, "target/test");
+		properties.put(ServerConfig.TEMP, "target/temp");
 		config = new ServerConfig(properties);
 	}
 
@@ -52,6 +53,11 @@ public class FileSplitterTaskTest {
 		File dir = Paths.get(config.getListenDirectory()).toFile();
 		if(!dir.exists()) {
 			dir.mkdirs();
+		}
+		
+		File tempDir = Paths.get(config.getTempDirectory()).toFile();
+		if(!tempDir.exists()) {
+			tempDir.mkdirs();
 		}
 		File file = Paths.get(tempFilesDir, fileName + ".txt").toFile();
 		try (BufferedWriter bw = new BufferedWriter(new java.io.FileWriter(file, false))) {
@@ -81,9 +87,11 @@ public class FileSplitterTaskTest {
 	
 	public void testFileSplitWithReducedBatchSize() throws Exception {
 		HashMap<String, String> properties = new HashMap<>();
-		properties.put(ServerConfig.LISTEN,"test");
+		properties.put(ServerConfig.LISTEN,"target/test1");
 		properties.put(ServerConfig.PROPERTY_MAX_BATCH_SIZE,"10");
+		properties.put(ServerConfig.TEMP, "target/temp");
 		config = new ServerConfig(properties);
+		clearDir(config.getListenDirectory());		
 		File file = writeFile("abcdefghijklmnoprstuvxyz\n" + "abc\n" + "zyxut", "test");
 		InputFileWrapper fileWrapper = new InputFileWrapper(file);
 		FileReaderTask fileReaderTask = new FileReaderTask(fileWrapper);

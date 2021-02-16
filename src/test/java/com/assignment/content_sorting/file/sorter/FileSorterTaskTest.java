@@ -34,7 +34,7 @@ public class FileSorterTaskTest {
 	@BeforeMethod
 	public void setup() {
 		HashMap<String, String> properties = new HashMap<>();
-		properties.put(ServerConfig.LISTEN, "test");
+		properties.put(ServerConfig.LISTEN, "target/test");
 		config = new ServerConfig(properties);
 		Injector injector = Guice.createInjector(new AbstractModule() {
 

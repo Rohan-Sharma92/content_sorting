@@ -5,6 +5,7 @@ import java.util.concurrent.Executors;
 
 import javax.inject.Named;
 
+import com.assignment.content_sorting.exceptions.ContentSortingException;
 import com.assignment.content_sorting.file.cache.ITempFileCache;
 import com.assignment.content_sorting.file.cache.TempFileCache;
 import com.assignment.content_sorting.file.common.IFileTask;
@@ -69,7 +70,7 @@ public class ContentSortingApplicationModule extends AbstractModule {
 
 	@Provides
 	@Singleton
-	public IServerConfig getConfig() {
+	public IServerConfig getConfig() throws ContentSortingException {
 		IPropertiesLoader propertiesLoader = new PropertiesLoader();
 		return propertiesLoader.loadConfig();
 	}

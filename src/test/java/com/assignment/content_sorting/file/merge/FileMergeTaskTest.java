@@ -29,7 +29,7 @@ public class FileMergeTaskTest {
 	public void setup() {
 		tempFileCache = new TempFileCache();
 		HashMap<String, String> properties = new HashMap<>();
-		properties.put(ServerConfig.TEMP, "test");
+		properties.put(ServerConfig.TEMP, "target/test");
 		config = new ServerConfig(properties);
 	}
 

@@ -1,7 +1,7 @@
 package com.assignment.content_sorting.service;
 
-import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import javax.inject.Named;
 
@@ -40,50 +40,44 @@ public class ContentSortingService extends AbstractDependentService {
 		 * 
 		 */
 
-		CompletableFuture<Void> splitResult = fileSplitter.process();
+		final CompletableFuture<Void> splitResult = fileSplitter.process();
 		splitResult.whenComplete((res, ex) -> {
-			TimeMetric sortTimeMetric = new TimeMetric("Sort files");
-			try {
-				sortFiles(sortTimeMetric);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			if (ex != null)
+				throw new CompletionException("Exception encountered while splitting", ex);
+			final TimeMetric sortTimeMetric = new TimeMetric("Sort files");
+			sortFiles(sortTimeMetric);
 		});
 
 	}
 
-	private void sortFiles(TimeMetric timeMetric) throws IOException {
-		CompletableFuture<Void> sortResult = fileSorter.process();
+	private void sortFiles(final TimeMetric timeMetric) {
+		final CompletableFuture<Void> sortResult = fileSorter.process();
 		sortResult.whenComplete((res, ex) -> {
+			if (ex != null)
+				throw new CompletionException("Exception encountered while sorting", ex);
 			timeMetric.print();
-			TimeMetric mergeTimeMetric = new TimeMetric("K-way Merge");
-			try {
-				mergeFiles(mergeTimeMetric);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			final TimeMetric mergeTimeMetric = new TimeMetric("K-way Merge");
+			mergeFiles(mergeTimeMetric);
 		});
 
 	}
-	
 
-	private void mergeFiles(TimeMetric timeMetric) throws IOException {
-		CompletableFuture<Void> mergeResult = fileMerger.process();
+	private void mergeFiles(final TimeMetric timeMetric) {
+		final CompletableFuture<Void> mergeResult = fileMerger.process();
 		mergeResult.whenComplete((res, ex) -> {
-			System.out.println("Files merged");
-			timeMetric.print();
-			try {
-				TimeMetric processedTimeMetric = new TimeMetric("Final Merge");
+			if (ex != null) {
+				throw new CompletionException("Exception encountered while merge", ex);
+			} else {
+				System.out.println("Files merged");
+				timeMetric.print();
+				final TimeMetric processedTimeMetric = new TimeMetric("Final Merge");
 				processFinalMerge(processedTimeMetric);
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
 		});
 
 	}
 
-	private void processFinalMerge(
-			TimeMetric processedTimeMetric) throws IOException {
+	private void processFinalMerge(final TimeMetric processedTimeMetric) {
 		processedFileMerger.process().whenComplete((res, ex) -> {
 			System.out.println("Files merged");
 			tempFileCache.purgeTempFiles();

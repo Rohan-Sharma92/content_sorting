@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 
 import org.testng.Assert;
@@ -25,21 +26,24 @@ public class FileSplitterTest {
 
 	@BeforeMethod
 	public void setup() {
-		config = new ServerConfig();
+		HashMap<String, String> properties = new HashMap<>();
+		properties.put(ServerConfig.LISTEN, "target/test");
+		properties.put(ServerConfig.TEMP, "target/temp");
+		config = new ServerConfig(properties);
 		fileSplittingEnqueuerFactory = new MockFileSplittingEnqueuerFactory();
 		fileSplitter = new FileSplitter(config, fileSplittingEnqueuerFactory);
-		clearDir();
-	}
-	
-	@AfterMethod
-	public void afterTest() {
-		clearDir();
 	}
 
-	private void clearDir() {
-		File dir = Paths.get(config.getTempDirectory()).toFile();
-		if(dir.exists()) {
-			for(File f:dir.listFiles()) {
+	@AfterMethod
+	public void afterTest() {
+		clearDir(config.getListenDirectory());
+		clearDir(config.getTempDirectory());
+	}
+
+	private void clearDir(String dirName) {
+		File dir = Paths.get(dirName).toFile();
+		if (dir.exists()) {
+			for (File f : dir.listFiles()) {
 				f.delete();
 			}
 		}
@@ -47,15 +51,15 @@ public class FileSplitterTest {
 
 	@Test
 	public void testSplitIsTriggeredForAllFiles() {
-		File file1 = writeFile("\"abcdefghijklmnoprstuvxyz\\n\" + \"abc\\n\" + \"zyxut\"","test1");
+		File file1 = writeFile("abcdefghijklmnoprstuvxyz\n" + "abc\n" + "zyxut", "test1");
 		MockFileProcessEnqueuer enqueuer1 = new MockFileProcessEnqueuer();
-		File file2 = writeFile("\"abdc\\n\" + \"hgfs\"","test2");
+		File file2 = writeFile("abdc\n" + "hgfs", "test2");
 		MockFileProcessEnqueuer enqueuer2 = new MockFileProcessEnqueuer();
-		fileSplittingEnqueuerFactory.setExpectedEnqueuer(Arrays.asList(enqueuer2,enqueuer1));
+		fileSplittingEnqueuerFactory.setExpectedEnqueuer(Arrays.asList(enqueuer2, enqueuer1));
 		CompletableFuture<Void> completableFuture = fileSplitter.process();
 		Assert.assertTrue(completableFuture.isDone());
-		Assert.assertEquals(enqueuer2.getFile().getFile(),file1);
-		Assert.assertEquals(enqueuer1.getFile().getFile(),file2);
+		Assert.assertEquals(enqueuer2.getFile().getFile(), file1);
+		Assert.assertEquals(enqueuer1.getFile().getFile(), file2);
 	}
 
 	private File writeFile(String content, String fileName) {

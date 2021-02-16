@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.HashMap;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -25,7 +26,9 @@ public class FileReaderTaskTest {
 	}
 	
 	private File writeFile(String content, String fileName) {
-		IServerConfig config = new ServerConfig();
+		HashMap<String, String> properties = new HashMap<>();
+		properties.put(ServerConfig.TEMP, "target/test");
+		IServerConfig config = new ServerConfig(properties);
 		String tempFilesDir = config.getTempDirectory();
 		File file = Paths.get(tempFilesDir, fileName + ".txt").toFile();
 		try (BufferedWriter bw = new BufferedWriter(new java.io.FileWriter(file, false))) {
