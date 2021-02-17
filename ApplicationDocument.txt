@@ -1,0 +1,43 @@
+Most of the sorting algorithms require the dataset to be load them into memory and then perform the sorting operation. This approach is quite fast and works for small datasets, however, for large datasets (of sizes more than 1GB), this approach becomes inefficient and is not scalable.
+Therefore, I have tried to develop an implementation of external sort algorithm.
+In this algorithm, the input files are splitted into small chunks (depending on how much RAM is available) and then written off to the disk. These chunks are then sorted individually and merged together to give the sorted result.
+
+Implementation Details
+---------------------------
+
+1. At startup, the application reads a configuration file which includes the following settings:
+   listen : This specifies the directory where input files to be sorted are already present.
+   temp: This is the path for temporary directory, that will be created to store temporary files during sorting operation.If no value is specified, the application will create a 'temp' directory inside the directory from which its running.
+   output: This specifies the final output directory where the sorted output file will be created.  The default value is 'output'
+   max_batch_size : This specifies the size limit for each temporary file created during initial splitting operation. This depends on the amount of main memory available. For e.g.,
+   Total Memory available : 1000 MB
+   Concurrency level : 10
+   
+   Batch size <= (Total Memory/ Concurrency level) 
+              <=  1000/10
+			  <=  100 MB
+			  
+	The default is 10 MB.
+	Concurrency level : The total number of tasks intended to run in parallel for splitting,sorting and merging operation. The default value is 5.
+	
+The external sort implementation involves the following stages :
+
+1. File Splitting:
+	
+   This stage involves reading the input files and generating multiple files of batch size specified. The files are sorted by size initially to ensure, the larger files are splitted first. Each file is enqueued to the file splitter engine. The file splitting task triggers two asynchronous tasks one for reading the file and and other to write multiple splitted files. The individual lines are read sequentially and added in a queue of a fixed size. There are multiple writer tasks spawned (governed by concurrency level) which poll this queue and read each line asynchronously. For each line, it tries to retrieve an already existing splitted file starting from the same prefix. For e.g. if the line contains word 
+   'abc', the writer will try to create a file with the name of first character i.e. a.txt, if not already existing. However, if 'a.txt' file exists and its of size more than the batch size, then it will perform the same operation recursively for a file with a name formed by appending next character in the word i.e. 'ab.txt' and so on.
+   
+   There is a validation in place to check if the word is alphanumeric or not. If not, then the sorting process will be stopped.
+
+2. File sorting
+   In this stage, the splitted files are sorted in parallel and are again written onto the disk. This is required because even if we have sorted files as our input, then simply merging the splitted files will give an incorrect file. Any exception or error in this stage, will stop further execution.
+
+3. File merging
+
+	The third stage involves merging of the sorted splitted files. To perform, this merge in an efficient way, a 'k-way' merge algorithm is applied. As part of this algorithm, the sorting strategy involves picking up all the files which start from the same character. Then, a single line is read from each sorted file and the lines are sorted in-memory. The sorted result is then written to a temporary file. This process is performed iteratively ensuring the memory utilisation is under control and sorted result is flushed regularly.
+	At the end, the temporary files are first removed and the sorted file is tranferred to the 'temp' directory ensuring we have one file per character for final merge.
+	This merging is performed asynchronously for optimization.
+	
+4. Final merge
+
+   The final merge operation involves picking up files using the files in a sorted manner and incrementally merging them. The final merge result is written off to a new file created in the output directory. The temporary folders are cleaned and cache is purged to release memory and disk space.

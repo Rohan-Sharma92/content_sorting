@@ -19,7 +19,7 @@ public class PropertiesLoader implements IPropertiesLoader {
 			Map<String, String> propertyMap = new HashMap<>();
 			String line = null;
 			while ((line = bufferedReader.readLine()) != null) {
-				String[] props = line.split(":");
+				String[] props = line.split("=");
 				propertyMap.put(props[0], props[1]);
 			}
 			config = new ServerConfig(propertyMap);
