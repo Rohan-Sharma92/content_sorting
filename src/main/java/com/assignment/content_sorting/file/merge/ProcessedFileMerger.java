@@ -17,7 +17,7 @@ import com.google.inject.Inject;
 
 public class ProcessedFileMerger implements IContentProcessor {
 
-	private static final String OUTPUT_TXT = "output.txt";
+	public static final String OUTPUT_TXT = "output.txt";
 	private final ITempFileCache tempFileCache;
 	private final IServerConfig serverConfig;
 

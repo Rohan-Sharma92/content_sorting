@@ -94,6 +94,7 @@ public class FileMergeTaskTest {
 		Assert.assertEquals(iterator.next(),"aght");
 		Assert.assertEquals(iterator.next(),"ahbnh");
 		Assert.assertEquals(iterator.next(),"azghg");
+		Assert.assertFalse(iterator.hasNext());
 	}
 
 }
