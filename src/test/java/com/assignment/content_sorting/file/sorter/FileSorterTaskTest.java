@@ -1,11 +1,8 @@
 package com.assignment.content_sorting.file.sorter;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.HashMap;
 
 import org.testng.Assert;
@@ -19,6 +16,7 @@ import com.assignment.content_sorting.file.reader.FileReaderTask;
 import com.assignment.content_sorting.file.sort.FileSorterTask;
 import com.assignment.content_sorting.mocks.MockValidationEngine;
 import com.assignment.content_sorting.properties.ServerConfig;
+import com.assignment.content_sorting.util.TestUtils;
 import com.assignment.content_sorting.validation.engine.IValidationEngine;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
@@ -51,46 +49,18 @@ public class FileSorterTaskTest {
 			}
 		});
 		readerTaskFactory = injector.getInstance(IFileReaderTaskFactory.class);
-		clearDir(config.getListenDirectory());
-		clearDir(config.getTempDirectory());
+		TestUtils.clearDir(config.getListenDirectory());
+		TestUtils.clearDir(config.getTempDirectory());
 	}
 
 	@AfterMethod
 	public void afterTest() {
-		clearDir(config.getListenDirectory());
-		clearDir(config.getTempDirectory());
-	}
-
-	private void clearDir(String dirName) {
-		File dir = Paths.get(dirName).toFile();
-		if (dir.exists()) {
-			for (File f : dir.listFiles()) {
-				f.delete();
-			}
-		}
-	}
-
-	private File writeFile(String content, String fileName) {
-		String tempFilesDir = config.getListenDirectory();
-		File dir = Paths.get(config.getListenDirectory()).toFile();
-		if (!dir.exists()) {
-			dir.mkdirs();
-		}
-		File file = Paths.get(tempFilesDir, fileName + ".txt").toFile();
-		try (BufferedWriter bw = new BufferedWriter(new java.io.FileWriter(file, false))) {
-
-			bw.write(content);
-			bw.newLine();
-			bw.flush();
-			bw.close();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
-		return file;
+		TestUtils.clearDir(config.getListenDirectory());
+		TestUtils.clearDir(config.getTempDirectory());
 	}
 
 	public void testSorter() throws Exception {
-		File file = writeFile("abcdefghijklmnoprstuvxyz\n" + "abc\n" + "zyxut", "test");
+		File file = TestUtils.writeFile("abcdefghijklmnoprstuvxyz\n" + "abc\n" + "zyxut", "test",config);
 		sorterTask = new FileSorterTask(file, readerTaskFactory);
 		sorterTask.call();
 		BufferedReader bufferedReader = new BufferedReader(new FileReader(file));

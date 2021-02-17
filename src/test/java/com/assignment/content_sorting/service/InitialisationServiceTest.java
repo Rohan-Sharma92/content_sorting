@@ -13,6 +13,7 @@ import org.testng.annotations.Test;
 
 import com.assignment.content_sorting.mocks.MockService;
 import com.assignment.content_sorting.properties.ServerConfig;
+import com.assignment.content_sorting.util.TestUtils;
 
 @Test
 public class InitialisationServiceTest {
@@ -29,18 +30,9 @@ public class InitialisationServiceTest {
 	}
 	@AfterMethod
 	public void afterTest() {
-		clearDir(config.getListenDirectory());
-		clearDir(config.getTempDirectory());
-		clearDir(config.getOutputDirectory());
-	}
-
-	private void clearDir(String dirName) {
-		File dir = Paths.get(dirName).toFile();
-		if (dir.exists()) {
-			for (File f : dir.listFiles()) {
-				f.delete();
-			}
-		}
+		TestUtils.clearDir(config.getListenDirectory());
+		TestUtils.clearDir(config.getTempDirectory());
+		TestUtils.clearDir(config.getOutputDirectory());
 	}
 
 

@@ -1,11 +1,8 @@
 package com.assignment.content_sorting.file.merge;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -17,6 +14,7 @@ import org.testng.annotations.Test;
 
 import com.assignment.content_sorting.file.cache.TempFileCache;
 import com.assignment.content_sorting.properties.ServerConfig;
+import com.assignment.content_sorting.util.TestUtils;
 
 @Test
 public class FileMergeTaskTest {
@@ -35,40 +33,13 @@ public class FileMergeTaskTest {
 
 	@AfterMethod
 	public void afterTest() {
-		clearDir(config.getTempDirectory());
-	}
-
-	private void clearDir(String dirName) {
-		File dir = Paths.get(dirName).toFile();
-		if (dir.exists()) {
-			for (File f : dir.listFiles()) {
-				f.delete();
-			}
-		}
-	}
-
-	private File writeFile(String content, String fileName) {
-		String tempFilesDir = config.getTempDirectory();
-		File dir = Paths.get(config.getTempDirectory()).toFile();
-		if (!dir.exists()) {
-			dir.mkdirs();
-		}
-		File file = Paths.get(tempFilesDir, fileName + ".txt").toFile();
-		try (BufferedWriter bw = new BufferedWriter(new java.io.FileWriter(file, false))) {
-
-			bw.write(content);
-			bw.newLine();
-			bw.flush();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
-		return file;
+		TestUtils.clearDir(config.getTempDirectory());
 	}
 
 	public void testMergeMultipleFiles() throws Exception {
-		File file1 = writeFile("abc\n" + "acf\n" + "aght","ab");
-		File file2 = writeFile("accde\n" + "ahbnh\n" + "azghg","ac");
-		File file3 = writeFile("a\n" + "afgh","a");
+		File file1 = TestUtils.writeTempFile("abc\n" + "acf\n" + "aght","ab",config);
+		File file2 = TestUtils.writeTempFile("accde\n" + "ahbnh\n" + "azghg","ac",config);
+		File file3 = TestUtils.writeTempFile("a\n" + "afgh","a",config);
 		tempFileCache.addTempFile("a",file3);
 		tempFileCache.addTempFile("ab",file1);
 		tempFileCache.addTempFile("ac",file2);

@@ -1,9 +1,6 @@
 package com.assignment.content_sorting.file.splitter;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.HashMap;
 
 import org.testng.Assert;
@@ -19,6 +16,7 @@ import com.assignment.content_sorting.file.reader.InputFileWrapper;
 import com.assignment.content_sorting.mocks.MockValidationEngine;
 import com.assignment.content_sorting.properties.IServerConfig;
 import com.assignment.content_sorting.properties.ServerConfig;
+import com.assignment.content_sorting.util.TestUtils;
 
 @Test
 public class FileSplitterTaskTest {
@@ -37,44 +35,13 @@ public class FileSplitterTaskTest {
 
 	@AfterMethod
 	public void afterTest() {
-		clearDir(config.getListenDirectory());
-		clearDir(config.getTempDirectory());
+		TestUtils.clearDir(config.getListenDirectory());
+		TestUtils.clearDir(config.getTempDirectory());
 	}
 
-	private void clearDir(String dirName) {
-		File dir = Paths.get(dirName).toFile();
-		if (dir.exists()) {
-			for (File f : dir.listFiles()) {
-				f.delete();
-			}
-		}
-	}
-
-	private File writeFile(String content, String fileName) {
-		String tempFilesDir = config.getListenDirectory();
-		File dir = Paths.get(config.getListenDirectory()).toFile();
-		if(!dir.exists()) {
-			dir.mkdirs();
-		}
-		
-		File tempDir = Paths.get(config.getTempDirectory()).toFile();
-		if(!tempDir.exists()) {
-			tempDir.mkdirs();
-		}
-		File file = Paths.get(tempFilesDir, fileName + ".txt").toFile();
-		try (BufferedWriter bw = new BufferedWriter(new java.io.FileWriter(file, false))) {
-
-			bw.write(content);
-			bw.newLine();
-			bw.flush();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
-		return file;
-	}
-
+	
 	public void testFileSplit() throws Exception {
-		File file = writeFile("abcdefghijklmnoprstuvxyz\n" + "abc\n" + "zyxut", "test");
+		File file = TestUtils.writeFile("abcdefghijklmnoprstuvxyz\n" + "abc\n" + "zyxut", "test",config);
 		InputFileWrapper fileWrapper = new InputFileWrapper(file);
 		FileReaderTask fileReaderTask = new FileReaderTask(fileWrapper,new MockValidationEngine<>());
 		fileReaderTask.call();
@@ -93,8 +60,8 @@ public class FileSplitterTaskTest {
 		properties.put(ServerConfig.PROPERTY_MAX_BATCH_SIZE,"10");
 		properties.put(ServerConfig.TEMP, "target/temp");
 		config = new ServerConfig(properties);
-		clearDir(config.getListenDirectory());		
-		File file = writeFile("abcdefghijklmnoprstuvxyz\n" + "abc\n" + "zyxut", "test");
+		TestUtils.clearDir(config.getListenDirectory());		
+		File file = TestUtils.writeFile("abcdefghijklmnoprstuvxyz\n" + "abc\n" + "zyxut", "test",config);
 		InputFileWrapper fileWrapper = new InputFileWrapper(file);
 		FileReaderTask fileReaderTask = new FileReaderTask(fileWrapper,new MockValidationEngine<>());
 		fileReaderTask.call();
@@ -111,7 +78,7 @@ public class FileSplitterTaskTest {
 	
 	public void testExceptionWhenNonAlphanumericContentFound() {
 		try {
-		File file = writeFile("?\n" + "abc\n" + "zyxut", "test");
+		File file = TestUtils.writeFile("?\n" + "abc\n" + "zyxut", "test",config);
 		InputFileWrapper fileWrapper = new InputFileWrapper(file);
 		MockValidationEngine<String> validationEngine = new MockValidationEngine<>();
 		validationEngine.setValidationFailure();
