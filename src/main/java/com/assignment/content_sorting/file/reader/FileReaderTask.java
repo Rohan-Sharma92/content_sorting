@@ -7,16 +7,20 @@ import java.io.IOException;
 
 import com.assignment.content_sorting.exceptions.ContentSortingException;
 import com.assignment.content_sorting.file.common.IFileTask;
+import com.assignment.content_sorting.validation.engine.IValidationEngine;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 public class FileReaderTask implements IFileTask<Void> {
 
 	private final IFileWrapper fileWrapper;
+	private final IValidationEngine<String> validationEngine;
 
 	@Inject
-	public FileReaderTask(@Assisted final IFileWrapper fileWrapper) {
+	public FileReaderTask(@Assisted final IFileWrapper fileWrapper,
+			final IValidationEngine<String> validationEngine) {
 		this.fileWrapper = fileWrapper;
+		this.validationEngine=validationEngine;
 	}
 
 	@Override
@@ -31,7 +35,7 @@ public class FileReaderTask implements IFileTask<Void> {
 			bufferedReader = new BufferedReader(new FileReader(file));
 			String line;
 			while ((line = bufferedReader.readLine()) != null) {
-				if (isValid(line))
+				if (validationEngine.applyValidationRules(line))
 					this.fileWrapper.addLinetoQueue(line);
 				else {
 					this.fileWrapper.markFileComplete();
@@ -51,9 +55,4 @@ public class FileReaderTask implements IFileTask<Void> {
 		}
 		return null;
 	}
-
-	private boolean isValid(String line) {
-		return line.matches("[A-Za-z0-9]+");
-	}
-
 }

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.assignment.content_sorting.mocks.MockValidationEngine;
 import com.assignment.content_sorting.properties.IServerConfig;
 import com.assignment.content_sorting.properties.ServerConfig;
 
@@ -19,7 +20,7 @@ public class FileReaderTaskTest {
 	
 	public void testFileIsMarkedComplete() throws Exception {
 		IFileWrapper fileWrapper= new InputFileWrapper(writeFile("abc\n"+"bdfg", "test"));
-		fileReaderTask = new FileReaderTask(fileWrapper);
+		fileReaderTask = new FileReaderTask(fileWrapper,new MockValidationEngine<>());
 		fileReaderTask.call();
 		Assert.assertTrue(fileWrapper.isFileRead());
 	}

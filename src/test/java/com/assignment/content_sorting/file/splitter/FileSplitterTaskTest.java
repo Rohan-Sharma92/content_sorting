@@ -16,6 +16,7 @@ import com.assignment.content_sorting.file.cache.ITempFileCache;
 import com.assignment.content_sorting.file.cache.TempFileCache;
 import com.assignment.content_sorting.file.reader.FileReaderTask;
 import com.assignment.content_sorting.file.reader.InputFileWrapper;
+import com.assignment.content_sorting.mocks.MockValidationEngine;
 import com.assignment.content_sorting.properties.IServerConfig;
 import com.assignment.content_sorting.properties.ServerConfig;
 
@@ -75,7 +76,7 @@ public class FileSplitterTaskTest {
 	public void testFileSplit() throws Exception {
 		File file = writeFile("abcdefghijklmnoprstuvxyz\n" + "abc\n" + "zyxut", "test");
 		InputFileWrapper fileWrapper = new InputFileWrapper(file);
-		FileReaderTask fileReaderTask = new FileReaderTask(fileWrapper);
+		FileReaderTask fileReaderTask = new FileReaderTask(fileWrapper,new MockValidationEngine<>());
 		fileReaderTask.call();
 		FileSplitterTask fileSplitterTask = new FileSplitterTask(fileWrapper, tempFileCache, config);
 		fileSplitterTask.call();
@@ -95,7 +96,7 @@ public class FileSplitterTaskTest {
 		clearDir(config.getListenDirectory());		
 		File file = writeFile("abcdefghijklmnoprstuvxyz\n" + "abc\n" + "zyxut", "test");
 		InputFileWrapper fileWrapper = new InputFileWrapper(file);
-		FileReaderTask fileReaderTask = new FileReaderTask(fileWrapper);
+		FileReaderTask fileReaderTask = new FileReaderTask(fileWrapper,new MockValidationEngine<>());
 		fileReaderTask.call();
 		FileSplitterTask fileSplitterTask = new FileSplitterTask(fileWrapper, tempFileCache, config);
 		fileSplitterTask.call();
@@ -112,7 +113,7 @@ public class FileSplitterTaskTest {
 		try {
 		File file = writeFile("?\n" + "abc\n" + "zyxut", "test");
 		InputFileWrapper fileWrapper = new InputFileWrapper(file);
-		FileReaderTask fileReaderTask = new FileReaderTask(fileWrapper);
+		FileReaderTask fileReaderTask = new FileReaderTask(fileWrapper, new MockValidationEngine<>());
 		fileReaderTask.call();
 		FileSplitterTask fileSplitterTask = new FileSplitterTask(fileWrapper, tempFileCache, config);
 		fileSplitterTask.call();

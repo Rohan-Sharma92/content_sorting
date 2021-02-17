@@ -31,12 +31,17 @@ import com.assignment.content_sorting.service.ContentSortingService;
 import com.assignment.content_sorting.service.IContentProcessor;
 import com.assignment.content_sorting.service.IService;
 import com.assignment.content_sorting.service.InitialisationService;
+import com.assignment.content_sorting.validation.AlphanumericDataValidationRule;
+import com.assignment.content_sorting.validation.IValidationRule;
+import com.assignment.content_sorting.validation.engine.IValidationEngine;
+import com.assignment.content_sorting.validation.engine.ValidationEngine;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
 
 public class ContentSortingApplicationModule extends AbstractModule {
@@ -66,6 +71,13 @@ public class ContentSortingApplicationModule extends AbstractModule {
 				.in(Scopes.SINGLETON);
 		bind(IService.class).annotatedWith(Names.named("ContentService")).to(ContentSortingService.class)
 				.in(Scopes.SINGLETON);
+		Multibinder<IValidationRule<String>> setBinder = Multibinder.newSetBinder(binder(),
+				new TypeLiteral<IValidationRule<String>>() {
+				});
+		setBinder.addBinding().to(AlphanumericDataValidationRule.class);
+		bind(new TypeLiteral<IValidationEngine<String>>() {
+		}).to(new TypeLiteral<ValidationEngine<String>>() {
+		}).in(Scopes.SINGLETON);
 	}
 
 	@Provides
