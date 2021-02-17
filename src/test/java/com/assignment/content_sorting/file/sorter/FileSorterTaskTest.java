@@ -17,7 +17,9 @@ import com.assignment.content_sorting.file.common.IFileTask;
 import com.assignment.content_sorting.file.factories.IFileReaderTaskFactory;
 import com.assignment.content_sorting.file.reader.FileReaderTask;
 import com.assignment.content_sorting.file.sort.FileSorterTask;
+import com.assignment.content_sorting.mocks.MockValidationEngine;
 import com.assignment.content_sorting.properties.ServerConfig;
+import com.assignment.content_sorting.validation.engine.IValidationEngine;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -30,21 +32,27 @@ public class FileSorterTaskTest {
 	private FileSorterTask sorterTask;
 	private ServerConfig config;
 	private IFileReaderTaskFactory readerTaskFactory;
+	private MockValidationEngine<String> validationEngine;
 
 	@BeforeMethod
 	public void setup() {
 		HashMap<String, String> properties = new HashMap<>();
 		properties.put(ServerConfig.LISTEN, "target/test");
 		config = new ServerConfig(properties);
+		validationEngine = new MockValidationEngine<>();
 		Injector injector = Guice.createInjector(new AbstractModule() {
 
 			@Override
 			protected void configure() {
 				install(new FactoryModuleBuilder().implement(new TypeLiteral<IFileTask<Void>>() {
 				}, FileReaderTask.class).build(IFileReaderTaskFactory.class));
+				bind(new TypeLiteral<IValidationEngine<String>>() {
+				}).toInstance(validationEngine);
 			}
 		});
 		readerTaskFactory = injector.getInstance(IFileReaderTaskFactory.class);
+		clearDir(config.getListenDirectory());
+		clearDir(config.getTempDirectory());
 	}
 
 	@AfterMethod

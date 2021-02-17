@@ -41,3 +41,28 @@ The external sort implementation involves the following stages :
 4. Final merge
 
    The final merge operation involves picking up files using the files in a sorted manner and incrementally merging them. The final merge result is written off to a new file created in the output directory. The temporary folders are cleaned and cache is purged to release memory and disk space.
+   
+   
+Test Results:
+-------------------- 
+For smaller example, following is the output :
+
+Started processing
+Stage: Split files	 TimeTaken: 159 ms.
+Stage: Sort files	 TimeTaken: 98 ms.
+Stage: K-way Merge	 TimeTaken: 1 ms.
+Stage: Final Merge	 TimeTaken: 45 ms.
+Completed Content Sorting Process	 TimeTaken: 315 ms.
+Processing complete
+
+
+For medium example, following is the output :
+
+Started processing
+Stage: Split files	 TimeTaken: 9347 ms.
+Stage: Sort files	 TimeTaken: 140 ms.
+Stage: K-way Merge	 TimeTaken: 1 ms.
+Stage: Final Merge	 TimeTaken: 157 ms.
+Completed Content Sorting Process	 TimeTaken: 9658 ms.
+Processing complete
+

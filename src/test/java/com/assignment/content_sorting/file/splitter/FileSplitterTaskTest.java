@@ -113,7 +113,9 @@ public class FileSplitterTaskTest {
 		try {
 		File file = writeFile("?\n" + "abc\n" + "zyxut", "test");
 		InputFileWrapper fileWrapper = new InputFileWrapper(file);
-		FileReaderTask fileReaderTask = new FileReaderTask(fileWrapper, new MockValidationEngine<>());
+		MockValidationEngine<String> validationEngine = new MockValidationEngine<>();
+		validationEngine.setValidationFailure();
+		FileReaderTask fileReaderTask = new FileReaderTask(fileWrapper, validationEngine);
 		fileReaderTask.call();
 		FileSplitterTask fileSplitterTask = new FileSplitterTask(fileWrapper, tempFileCache, config);
 		fileSplitterTask.call();
