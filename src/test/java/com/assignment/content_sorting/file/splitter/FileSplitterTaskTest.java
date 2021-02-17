@@ -11,6 +11,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.assignment.content_sorting.exceptions.ContentSortingException;
 import com.assignment.content_sorting.file.cache.ITempFileCache;
 import com.assignment.content_sorting.file.cache.TempFileCache;
 import com.assignment.content_sorting.file.reader.FileReaderTask;
@@ -105,5 +106,20 @@ public class FileSplitterTaskTest {
 		Assert.assertNotNull(f1);
 		Assert.assertNotNull(f2);
 		Assert.assertNotNull(f3);
+	}
+	
+	public void testExceptionWhenNonAlphanumericContentFound() {
+		try {
+		File file = writeFile("?\n" + "abc\n" + "zyxut", "test");
+		InputFileWrapper fileWrapper = new InputFileWrapper(file);
+		FileReaderTask fileReaderTask = new FileReaderTask(fileWrapper);
+		fileReaderTask.call();
+		FileSplitterTask fileSplitterTask = new FileSplitterTask(fileWrapper, tempFileCache, config);
+		fileSplitterTask.call();
+		}
+		catch(Exception e) {
+			Assert.assertTrue(e instanceof ContentSortingException);
+			Assert.assertEquals(e.getMessage(),"Invalid line. Only alphanumeric characters allowed");
+		}
 	}
 }

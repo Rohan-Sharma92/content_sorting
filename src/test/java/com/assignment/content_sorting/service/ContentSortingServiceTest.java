@@ -12,10 +12,10 @@ public class ContentSortingServiceTest {
 	private ContentSortingService contentSortingService;
 
 	public void testSequence() {
-		MockContentProcessor fileSplitter= new MockContentProcessor("FileSplitter");
-		MockContentProcessor fileSorter= new MockContentProcessor("FileSorter");
-		MockContentProcessor fileMerger= new MockContentProcessor("TempFileMerge");
-		MockContentProcessor processedFileMerger= new MockContentProcessor("ProcessedFileMerge");
+		MockContentProcessor fileSplitter= new MockContentProcessor();
+		MockContentProcessor fileSorter= new MockContentProcessor();
+		MockContentProcessor fileMerger= new MockContentProcessor();
+		MockContentProcessor processedFileMerger= new MockContentProcessor();
 		TempFileCache tempFileCache = new TempFileCache();
 		contentSortingService = new ContentSortingService(fileSplitter, fileSorter, fileMerger, processedFileMerger,
 				tempFileCache);
