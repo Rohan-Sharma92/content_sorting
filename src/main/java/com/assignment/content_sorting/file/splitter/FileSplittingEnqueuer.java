@@ -15,13 +15,32 @@ import com.assignment.content_sorting.file.reader.IFileWrapper;
 import com.assignment.content_sorting.properties.IServerConfig;
 import com.google.inject.Inject;
 
+/**
+ * The Class FileSplittingEnqueuer.
+ * @author Rohan
+ */
 public class FileSplittingEnqueuer implements IFileProcessEnqueuer {
 
+	/** The file splitting pool. */
 	private final ExecutorService fileSplittingPool;
+	
+	/** The config. */
 	private final IServerConfig config;
+	
+	/** The file splitter task factory. */
 	private final IFileSplitterTaskFactory fileSplitterTaskFactory;
+	
+	/** The file reader task factory. */
 	private final IFileReaderTaskFactory fileReaderTaskFactory;
 
+	/**
+	 * Instantiates a new file splitting enqueuer.
+	 *
+	 * @param fileSplittingPool the file splitting pool
+	 * @param config the config
+	 * @param fileReaderTaskFactory the file reader task factory
+	 * @param fileSplitterTaskFactory the file splitter task factory
+	 */
 	@Inject
 	public FileSplittingEnqueuer(@Named("FileSplittingExecutor") final ExecutorService fileSplittingPool,
 			final IServerConfig config, final IFileReaderTaskFactory fileReaderTaskFactory,
@@ -32,8 +51,8 @@ public class FileSplittingEnqueuer implements IFileProcessEnqueuer {
 		this.fileSplitterTaskFactory = fileSplitterTaskFactory;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.assignment.content_sorting.file.splitter.IFileProcessEnqueuer#enqueue(com.assignment.content_sorting.file.reader.IFileWrapper)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public CompletableFuture<Void> enqueue(final IFileWrapper fileWrapper) {
@@ -43,6 +62,12 @@ public class FileSplittingEnqueuer implements IFileProcessEnqueuer {
 		return CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]));
 	}
 
+	/**
+	 * Trigger splitting tasks.
+	 *
+	 * @param fileWrapper the file wrapper
+	 * @param futures the futures
+	 */
 	private void triggerSplittingTasks(final IFileWrapper fileWrapper, List<CompletableFuture<Void>> futures) {
 		for (int i = 0; i < config.getConcurrencyLevel(); i++) {
 			CompletableFuture<Void> completableFuture = CompletableFuture.<Void>supplyAsync(() -> {
@@ -57,6 +82,12 @@ public class FileSplittingEnqueuer implements IFileProcessEnqueuer {
 		}
 	}
 
+	/**
+	 * Trigger reading task.
+	 *
+	 * @param fileWrapper the file wrapper
+	 * @return the completable future
+	 */
 	private CompletableFuture<Void> triggerReadingTask(final IFileWrapper fileWrapper) {
 		return CompletableFuture.supplyAsync(() -> {
 			IFileTask<Void> readerTask = fileReaderTaskFactory.createReader(fileWrapper);

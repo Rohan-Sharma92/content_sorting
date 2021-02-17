@@ -15,20 +15,34 @@ import com.assignment.content_sorting.properties.IServerConfig;
 import com.assignment.content_sorting.service.IContentProcessor;
 import com.google.inject.Inject;
 
+/**
+ * The Class FileSplitter.
+ */
 public class FileSplitter implements IContentProcessor {
 
+	/** The config. */
 	private final IServerConfig config;
+	
+	/** The file splitting enqueuer factory. */
 	private final IFileSplittingEnqueuerFactory fileSplittingEnqueuerFactory;
 
+	/**
+	 * Instantiates a new file splitter.
+	 *
+	 * @param config the config
+	 * @param fileSplittingEnqueuerFactory the file splitting enqueuer factory
+	 */
 	@Inject
 	public FileSplitter(final IServerConfig config, final IFileSplittingEnqueuerFactory fileSplittingEnqueuerFactory) {
 		this.config = config;
 		this.fileSplittingEnqueuerFactory = fileSplittingEnqueuerFactory;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public CompletableFuture<Void> process() {
-		//TimeMetric metric = new TimeMetric("splitter");
 		File inputDir = Paths.get(config.getListenDirectory()).toFile();
 		List<IFileWrapper> wrappedFiles = Arrays.asList(inputDir.listFiles()).stream()
 				.map(file -> new InputFileWrapper(file)).sorted(new Comparator<IFileWrapper>() {
@@ -41,6 +55,12 @@ public class FileSplitter implements IContentProcessor {
 		return CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[futures.size()]));
 	}
 
+	/**
+	 * Process.
+	 *
+	 * @param file the file
+	 * @return the completable future
+	 */
 	private CompletableFuture<Void> process(IFileWrapper file) {
 		IFileProcessEnqueuer fileProcessEnqueuer = fileSplittingEnqueuerFactory.createFileSplittingExecutionRequest();
 		return fileProcessEnqueuer.enqueue(file);

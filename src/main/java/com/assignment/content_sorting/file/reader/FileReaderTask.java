@@ -11,11 +11,24 @@ import com.assignment.content_sorting.validation.engine.IValidationEngine;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
+/**
+ * The Class FileReaderTask.
+ * @author Rohan
+ */
 public class FileReaderTask implements IFileTask<Void> {
 
+	/** The file wrapper. */
 	private final IFileWrapper fileWrapper;
+	
+	/** The validation engine. */
 	private final IValidationEngine<String> validationEngine;
 
+	/**
+	 * Instantiates a new file reader task.
+	 *
+	 * @param fileWrapper the file wrapper
+	 * @param validationEngine the validation engine
+	 */
 	@Inject
 	public FileReaderTask(@Assisted final IFileWrapper fileWrapper,
 			final IValidationEngine<String> validationEngine) {
@@ -23,11 +36,20 @@ public class FileReaderTask implements IFileTask<Void> {
 		this.validationEngine=validationEngine;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Void call() throws Exception {
 		return readFile();
 	}
 
+	/**
+	 * Read file.
+	 *
+	 * @return the void
+	 * @throws Exception the exception
+	 */
 	private Void readFile() throws Exception {
 		BufferedReader bufferedReader = null;
 		try {

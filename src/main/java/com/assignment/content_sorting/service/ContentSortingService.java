@@ -8,15 +8,39 @@ import com.assignment.content_sorting.file.cache.ITempFileCache;
 import com.assignment.content_sorting.util.TimerTask;
 import com.google.inject.Inject;
 
+/**
+ * The Class ContentSortingService.
+ * @author Rohan
+ */
 public class ContentSortingService extends AbstractDependentService {
 
+	/** The file splitter. */
 	private final IContentProcessor fileSplitter;
+	
+	/** The file sorter. */
 	private final IContentProcessor fileSorter;
+	
+	/** The file merger. */
 	private final IContentProcessor fileMerger;
+	
+	/** The processed file merger. */
 	private final IContentProcessor processedFileMerger;
+	
+	/** The temp file cache. */
 	private final ITempFileCache tempFileCache;
+	
+	/** The timer task. */
 	private final TimerTask timerTask;
 
+	/**
+	 * Instantiates a new content sorting service.
+	 *
+	 * @param fileSplitter the file splitter
+	 * @param fileSorter the file sorter
+	 * @param fileMerger the file merger
+	 * @param processedFileMerger the processed file merger
+	 * @param tempFileCache the temp file cache
+	 */
 	@Inject
 	public ContentSortingService(final @Named("FileSplitter") IContentProcessor fileSplitter,
 			final @Named("FileSorter") IContentProcessor fileSorter,
@@ -31,6 +55,9 @@ public class ContentSortingService extends AbstractDependentService {
 		this.timerTask = new TimerTask("Content Sorting Process");
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void performProcessing() {
 		/**
@@ -54,10 +81,19 @@ public class ContentSortingService extends AbstractDependentService {
 
 	}
 
+	/**
+	 * Handle exception.
+	 *
+	 * @param msg the msg
+	 * @param ex the ex
+	 */
 	private void handleException(String msg, Throwable ex) {
 		System.out.println(msg + ex.getMessage());
 	}
 
+	/**
+	 * Sort files.
+	 */
 	private void sortFiles() {
 		final CompletableFuture<Void> sortResult = fileSorter.process();
 		sortResult.whenComplete((res, ex) -> {
@@ -71,6 +107,9 @@ public class ContentSortingService extends AbstractDependentService {
 
 	}
 
+	/**
+	 * Merge files.
+	 */
 	private void mergeFiles() {
 		final CompletableFuture<Void> mergeResult = fileMerger.process();
 		mergeResult.whenComplete((res, ex) -> {
@@ -84,6 +123,9 @@ public class ContentSortingService extends AbstractDependentService {
 
 	}
 
+	/**
+	 * Process final merge.
+	 */
 	private void processFinalMerge() {
 		processedFileMerger.process().whenComplete((res, ex) -> {
 			timerTask.completeStage("Final Merge");

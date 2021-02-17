@@ -15,18 +15,36 @@ import com.assignment.content_sorting.properties.IServerConfig;
 import com.assignment.content_sorting.service.IContentProcessor;
 import com.google.inject.Inject;
 
+/**
+ * The Class ProcessedFileMerger.
+ * @author Rohan
+ */
 public class ProcessedFileMerger implements IContentProcessor {
 
+	/** The Constant OUTPUT_TXT. */
 	public static final String OUTPUT_TXT = "output.txt";
+	
+	/** The temp file cache. */
 	private final ITempFileCache tempFileCache;
+	
+	/** The server config. */
 	private final IServerConfig serverConfig;
 
+	/**
+	 * Instantiates a new processed file merger.
+	 *
+	 * @param tempFileCache the temp file cache
+	 * @param serverConfig the server config
+	 */
 	@Inject
 	public ProcessedFileMerger(final ITempFileCache tempFileCache, final IServerConfig serverConfig) {
 		this.tempFileCache = tempFileCache;
 		this.serverConfig = serverConfig;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.assignment.content_sorting.service.IContentProcessor#process()
+	 */
 	@Override
 	public CompletableFuture<Void> process() {
 		File outputDir = Paths.get(serverConfig.getOutputDirectory()).toFile();

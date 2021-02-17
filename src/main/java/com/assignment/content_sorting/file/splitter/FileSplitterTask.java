@@ -15,13 +15,30 @@ import com.assignment.content_sorting.properties.IServerConfig;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
+/**
+ * The Class FileSplitterTask.
+ */
 public class FileSplitterTask extends FileWriterTask implements IFileTask<Void> {
 
+	/** The Constant TXT. */
 	private static final String TXT = ".txt";
+	
+	/** The temp file cache. */
 	private final ITempFileCache tempFileCache;
+	
+	/** The config. */
 	private final IServerConfig config;
+	
+	/** The file wrapper. */
 	private final IFileWrapper fileWrapper;
 
+	/**
+	 * Instantiates a new file splitter task.
+	 *
+	 * @param fileWrapper the file wrapper
+	 * @param tempFileCache the temp file cache
+	 * @param config the config
+	 */
 	@Inject
 	public FileSplitterTask(@Assisted final IFileWrapper fileWrapper, final ITempFileCache tempFileCache,
 			final IServerConfig config) {
@@ -30,6 +47,9 @@ public class FileSplitterTask extends FileWriterTask implements IFileTask<Void> 
 		this.fileWrapper = fileWrapper;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Void call() throws Exception {
 		while (!fileWrapper.isFileRead() || (fileWrapper.isFileRead() && !fileWrapper.isBufferEmpty())) {
@@ -41,6 +61,12 @@ public class FileSplitterTask extends FileWriterTask implements IFileTask<Void> 
 		return null;
 	}
 
+	/**
+	 * Process.
+	 *
+	 * @param line the line
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	private void process(String line) throws IOException {
 		if (StringUtils.isAllBlank(line) || StringUtils.isAllEmpty(line))
 			return;
@@ -48,10 +74,23 @@ public class FileSplitterTask extends FileWriterTask implements IFileTask<Void> 
 		writeLines(Arrays.asList(line), file, true);
 	}
 
+	/**
+	 * Gets the file.
+	 *
+	 * @param line the line
+	 * @return the file
+	 */
 	private File getFile(String line) {
 		return getFile(StringUtils.EMPTY, line);
 	}
 
+	/**
+	 * Gets the file.
+	 *
+	 * @param prefix the prefix
+	 * @param line the line
+	 * @return the file
+	 */
 	protected File getFile(String prefix, String line) {
 		String filename = (prefix + line.charAt(0)).toLowerCase();
 		File file = this.tempFileCache.getTempFile(filename);

@@ -8,15 +8,19 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The Class FileWriterTask.
+ * @author Rohan
+ */
 public class FileWriterTask{
 
 	  /**
-     * Move files from source path to destine path
-     *
-     * @param source
-     * @param destine
-	 * @throws IOException 
-     */
+  	 * Move files from source path to destine path.
+  	 *
+  	 * @param source the source
+  	 * @param destine the destine
+  	 * @throws IOException Signals that an I/O exception has occurred.
+  	 */
     public void move(File source, File destine) throws IOException {
         try {
             Files.copy(source.toPath(), destine.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -26,7 +30,7 @@ public class FileWriterTask{
     }
 
     /**
-     * Delete the files
+     * Delete the files.
      *
      * @param files list of files to be deleted
      */
@@ -36,6 +40,14 @@ public class FileWriterTask{
         }
     }
     
+	/**
+	 * Write lines.
+	 *
+	 * @param lines the lines
+	 * @param file the file
+	 * @param append the append
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public void writeLines(List<String> lines, File file, Boolean append) throws IOException{
         try (BufferedWriter bw = new BufferedWriter(new java.io.FileWriter(file, append))) {
             for (String line : lines) {

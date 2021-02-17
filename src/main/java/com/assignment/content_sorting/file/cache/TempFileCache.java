@@ -9,37 +9,65 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * The Class TempFileCache.
+ * @author Rohan
+ */
 public class TempFileCache implements ITempFileCache {
-	private final Map<String, File> tempFiles = new ConcurrentHashMap<>();
-	private final Map<String, Set<File>> sameCharacterFiles = new ConcurrentHashMap<>();
-	private final Set<String> exhaustedTempFiles = ConcurrentHashMap.newKeySet();
 
+	/** The temp files. */
+	private final Map<String, File> tempFiles = new ConcurrentHashMap<>();
+
+	/** The same character files. */
+	private final Map<String, Set<File>> sameCharacterFiles = new ConcurrentHashMap<>();
+	
+	/** The completed temp files. */
+	private final Set<String> completedTempFiles = ConcurrentHashMap.newKeySet();
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public File getTempFile(String fileName) {
 		return tempFiles.get(fileName);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void addTempFile(String filename, File file) {
 		this.tempFiles.put(filename, file);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isFileComplete(String fileName) {
-		return exhaustedTempFiles.contains(fileName);
+		return completedTempFiles.contains(fileName);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void addCompletedFile(String fileName) {
-		this.exhaustedTempFiles.add(fileName);
+		this.completedTempFiles.add(fileName);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void addToPrefixCache(File file) {
 		String key = String.valueOf(file.getName().charAt(0));
 		this.sameCharacterFiles.computeIfAbsent(key, k -> new HashSet<File>()).add(file);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<String> getTempFileNames() {
 		LinkedList<String> orderedFileNames = new LinkedList<String>(tempFiles.keySet());
@@ -47,15 +75,21 @@ public class TempFileCache implements ITempFileCache {
 		return orderedFileNames;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Set<File> getFragmentedTempFiles(String name) {
 		return this.sameCharacterFiles.get(name);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void purgeTempFiles() {
-		this.tempFiles.values().stream().forEach(file ->file.delete());
+		this.tempFiles.values().stream().forEach(file -> file.delete());
 		this.tempFiles.clear();
-		this.exhaustedTempFiles.clear();
+		this.completedTempFiles.clear();
 	}
 }

@@ -15,12 +15,28 @@ import com.assignment.content_sorting.file.factories.IFileMergeTaskFactory;
 import com.assignment.content_sorting.service.IContentProcessor;
 import com.google.inject.Inject;
 
+/**
+ * The Class TempFileMerger.
+ * @author Rohan
+ */
 public class TempFileMerger implements IContentProcessor{
 
+	/** The temp file cache. */
 	private final ITempFileCache tempFileCache;
+	
+	/** The merge pool. */
 	private final ExecutorService mergePool;
+	
+	/** The merge task factory. */
 	private final IFileMergeTaskFactory mergeTaskFactory;
 
+	/**
+	 * Instantiates a new temp file merger.
+	 *
+	 * @param tempFileCache the temp file cache
+	 * @param mergePool the merge pool
+	 * @param mergeTaskFactory the merge task factory
+	 */
 	@Inject
 	public TempFileMerger(final ITempFileCache tempFileCache,
 			final @Named("FileSplittingExecutor") ExecutorService mergePool,
@@ -30,6 +46,9 @@ public class TempFileMerger implements IContentProcessor{
 		this.mergeTaskFactory = mergeTaskFactory;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public CompletableFuture<Void> process() {
 		List<CompletableFuture<Void>> futures = new ArrayList<>();
@@ -44,8 +63,6 @@ public class TempFileMerger implements IContentProcessor{
 							throw new CompletionException(e);
 						}
 					},mergePool));
-				}else {
-					//System.out.println("Completed file:"+fileName);
 				}
 			}
 		}

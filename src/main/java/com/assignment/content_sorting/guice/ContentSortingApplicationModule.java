@@ -44,8 +44,15 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
 
+/**
+ * The Class ContentSortingApplicationModule.
+ * @author Rohan
+ */
 public class ContentSortingApplicationModule extends AbstractModule {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void configure() {
 		install(new FactoryModuleBuilder().implement(IFileProcessEnqueuer.class, FileSplittingEnqueuer.class)
@@ -80,6 +87,12 @@ public class ContentSortingApplicationModule extends AbstractModule {
 		}).in(Scopes.SINGLETON);
 	}
 
+	/**
+	 * Gets the config.
+	 *
+	 * @return the config
+	 * @throws ContentSortingException the content sorting exception
+	 */
 	@Provides
 	@Singleton
 	public IServerConfig getConfig() throws ContentSortingException {
@@ -87,6 +100,12 @@ public class ContentSortingApplicationModule extends AbstractModule {
 		return propertiesLoader.loadConfig();
 	}
 
+	/**
+	 * Gets the executor service.
+	 *
+	 * @param serverConfig the server config
+	 * @return the executor service
+	 */
 	@Provides
 	@Singleton
 	@Named("FileSplittingExecutor")
