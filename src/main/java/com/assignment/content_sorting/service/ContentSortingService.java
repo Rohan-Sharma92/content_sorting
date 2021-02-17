@@ -5,7 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import javax.inject.Named;
 
 import com.assignment.content_sorting.file.cache.ITempFileCache;
-import com.assignment.content_sorting.util.TimeMetric;
+import com.assignment.content_sorting.util.TimerTask;
 import com.google.inject.Inject;
 
 public class ContentSortingService extends AbstractDependentService {
@@ -15,6 +15,7 @@ public class ContentSortingService extends AbstractDependentService {
 	private final IContentProcessor fileMerger;
 	private final IContentProcessor processedFileMerger;
 	private final ITempFileCache tempFileCache;
+	private final TimerTask timerTask;
 
 	@Inject
 	public ContentSortingService(final @Named("FileSplitter") IContentProcessor fileSplitter,
@@ -27,6 +28,7 @@ public class ContentSortingService extends AbstractDependentService {
 		this.fileMerger = fileMerger;
 		this.processedFileMerger = processedFileMerger;
 		this.tempFileCache = tempFileCache;
+		this.timerTask = new TimerTask("Content Sorting Process");
 	}
 
 	@Override
@@ -38,14 +40,15 @@ public class ContentSortingService extends AbstractDependentService {
 		 * k files into output file
 		 * 
 		 */
-
+		System.out.println("Started processing");
+		timerTask.start();
 		final CompletableFuture<Void> splitResult = fileSplitter.process();
 		splitResult.whenComplete((res, ex) -> {
+			timerTask.completeStage("Split files");
 			if (ex != null) {
 				handleException("Exception encountered while splitting: ", ex);
 			} else {
-				final TimeMetric sortTimeMetric = new TimeMetric("Sort files");
-				sortFiles(sortTimeMetric);
+				sortFiles();
 			}
 		});
 
@@ -55,44 +58,42 @@ public class ContentSortingService extends AbstractDependentService {
 		System.out.println(msg + ex.getMessage());
 	}
 
-	private void sortFiles(final TimeMetric timeMetric) {
+	private void sortFiles() {
 		final CompletableFuture<Void> sortResult = fileSorter.process();
 		sortResult.whenComplete((res, ex) -> {
+			timerTask.completeStage("Sort files");
 			if (ex != null) {
 				handleException("Exception encountered while sorting: ", ex);
 			} else {
-				timeMetric.print();
-				final TimeMetric mergeTimeMetric = new TimeMetric("K-way Merge");
-				mergeFiles(mergeTimeMetric);
+				mergeFiles();
 			}
 		});
 
 	}
 
-	private void mergeFiles(final TimeMetric timeMetric) {
+	private void mergeFiles() {
 		final CompletableFuture<Void> mergeResult = fileMerger.process();
 		mergeResult.whenComplete((res, ex) -> {
+			timerTask.completeStage("K-way Merge");
 			if (ex != null) {
 				handleException("Exception encountered while merge: ", ex);
 			} else {
-				System.out.println("Files merged");
-				timeMetric.print();
-				final TimeMetric processedTimeMetric = new TimeMetric("Final Merge");
-				processFinalMerge(processedTimeMetric);
+				processFinalMerge();
 			}
 		});
 
 	}
 
-	private void processFinalMerge(final TimeMetric processedTimeMetric) {
+	private void processFinalMerge() {
 		processedFileMerger.process().whenComplete((res, ex) -> {
+			timerTask.completeStage("Final Merge");
 			if (ex != null) {
 				handleException("Exception encountered while final merge: ", ex);
 			} else {
-				System.out.println("Files merged");
 				tempFileCache.purgeTempFiles();
-				processedTimeMetric.print();
 			}
+			timerTask.processingComplete();
+			System.out.println("Processing complete");
 		});
 	}
 
