@@ -20,8 +20,7 @@ public class FileReaderTaskTest {
 	public void testFileIsMarkedComplete() throws Exception {
 		IFileWrapper fileWrapper= new InputFileWrapper(writeFile("abc\n"+"bdfg", "test"));
 		fileReaderTask = new FileReaderTask(fileWrapper);
-		Boolean result = fileReaderTask.call();
-		Assert.assertTrue(result);
+		fileReaderTask.call();
 		Assert.assertTrue(fileWrapper.isFileRead());
 	}
 	

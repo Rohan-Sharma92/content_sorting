@@ -36,7 +36,7 @@ public class FileWriterTask{
         }
     }
     
-	public void writeLines(List<String> lines, File file, Boolean append){
+	public void writeLines(List<String> lines, File file, Boolean append) throws IOException{
         try (BufferedWriter bw = new BufferedWriter(new java.io.FileWriter(file, append))) {
             for (String line : lines) {
                 bw.write(line);
@@ -44,7 +44,7 @@ public class FileWriterTask{
             }
             bw.flush();
         } catch (IOException e) {
-            
+            throw e;
         }
     }
 }

@@ -13,7 +13,6 @@ import com.assignment.content_sorting.file.reader.IFileWrapper;
 import com.assignment.content_sorting.file.reader.InputFileWrapper;
 import com.assignment.content_sorting.properties.IServerConfig;
 import com.assignment.content_sorting.service.IContentProcessor;
-import com.assignment.content_sorting.util.TimeMetric;
 import com.google.inject.Inject;
 
 public class FileSplitter implements IContentProcessor {
@@ -29,7 +28,7 @@ public class FileSplitter implements IContentProcessor {
 
 	@Override
 	public CompletableFuture<Void> process() {
-		TimeMetric metric = new TimeMetric("splitter");
+		//TimeMetric metric = new TimeMetric("splitter");
 		File inputDir = Paths.get(config.getListenDirectory()).toFile();
 		List<IFileWrapper> wrappedFiles = Arrays.asList(inputDir.listFiles()).stream()
 				.map(file -> new InputFileWrapper(file)).sorted(new Comparator<IFileWrapper>() {
@@ -37,15 +36,12 @@ public class FileSplitter implements IContentProcessor {
 						return b.getFileSize() > a.getFileSize() ? 1 : 0;
 					}
 				}).collect(Collectors.toList());
-		List<CompletableFuture<IFileWrapper>> futures = wrappedFiles.stream().map(file -> process(file))
+		List<CompletableFuture<Void>> futures = wrappedFiles.stream().map(file -> process(file))
 				.collect(Collectors.toList());
-		return CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[futures.size()]))
-				.whenComplete((result, ex) -> {
-					metric.print();
-				});
+		return CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[futures.size()]));
 	}
 
-	private CompletableFuture<IFileWrapper> process(IFileWrapper file) {
+	private CompletableFuture<Void> process(IFileWrapper file) {
 		IFileProcessEnqueuer fileProcessEnqueuer = fileSplittingEnqueuerFactory.createFileSplittingExecutionRequest();
 		return fileProcessEnqueuer.enqueue(file);
 	}

@@ -1,7 +1,6 @@
 package com.assignment.content_sorting.service;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 
 import javax.inject.Named;
 
@@ -42,22 +41,30 @@ public class ContentSortingService extends AbstractDependentService {
 
 		final CompletableFuture<Void> splitResult = fileSplitter.process();
 		splitResult.whenComplete((res, ex) -> {
-			if (ex != null)
-				throw new CompletionException("Exception encountered while splitting", ex);
-			final TimeMetric sortTimeMetric = new TimeMetric("Sort files");
-			sortFiles(sortTimeMetric);
+			if (ex != null) {
+				handleException("Exception encountered while splitting: ", ex);
+			} else {
+				final TimeMetric sortTimeMetric = new TimeMetric("Sort files");
+				sortFiles(sortTimeMetric);
+			}
 		});
 
+	}
+
+	private void handleException(String msg, Throwable ex) {
+		System.out.println(msg + ex.getMessage());
 	}
 
 	private void sortFiles(final TimeMetric timeMetric) {
 		final CompletableFuture<Void> sortResult = fileSorter.process();
 		sortResult.whenComplete((res, ex) -> {
-			if (ex != null)
-				throw new CompletionException("Exception encountered while sorting", ex);
-			timeMetric.print();
-			final TimeMetric mergeTimeMetric = new TimeMetric("K-way Merge");
-			mergeFiles(mergeTimeMetric);
+			if (ex != null) {
+				handleException("Exception encountered while sorting: ", ex);
+			} else {
+				timeMetric.print();
+				final TimeMetric mergeTimeMetric = new TimeMetric("K-way Merge");
+				mergeFiles(mergeTimeMetric);
+			}
 		});
 
 	}
@@ -66,7 +73,7 @@ public class ContentSortingService extends AbstractDependentService {
 		final CompletableFuture<Void> mergeResult = fileMerger.process();
 		mergeResult.whenComplete((res, ex) -> {
 			if (ex != null) {
-				throw new CompletionException("Exception encountered while merge", ex);
+				handleException("Exception encountered while merge: ", ex);
 			} else {
 				System.out.println("Files merged");
 				timeMetric.print();
@@ -79,9 +86,13 @@ public class ContentSortingService extends AbstractDependentService {
 
 	private void processFinalMerge(final TimeMetric processedTimeMetric) {
 		processedFileMerger.process().whenComplete((res, ex) -> {
-			System.out.println("Files merged");
-			tempFileCache.purgeTempFiles();
-			processedTimeMetric.print();
+			if (ex != null) {
+				handleException("Exception encountered while final merge: ", ex);
+			} else {
+				System.out.println("Files merged");
+				tempFileCache.purgeTempFiles();
+				processedTimeMetric.print();
+			}
 		});
 	}
 

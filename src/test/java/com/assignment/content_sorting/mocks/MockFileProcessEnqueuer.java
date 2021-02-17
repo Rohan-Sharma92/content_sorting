@@ -9,21 +9,15 @@ public class MockFileProcessEnqueuer implements IFileProcessEnqueuer {
 
 	private IFileWrapper fileWrapper;
 
-	private IFileWrapper file;
-
 	@Override
-	public CompletableFuture<IFileWrapper> enqueue(IFileWrapper fileWrapper) {
+	public CompletableFuture<Void> enqueue(IFileWrapper fileWrapper) {
 		this.fileWrapper = fileWrapper;
-		CompletableFuture<IFileWrapper> completedFuture = CompletableFuture.completedFuture(file);
+		CompletableFuture<Void> completedFuture = CompletableFuture.completedFuture(null);
 		return completedFuture;
 	}
 
 	public IFileWrapper getFile() {
 		return fileWrapper;
-	}
-
-	public void setExpectedFile(IFileWrapper file) {
-		this.file = file;
 	}
 
 }

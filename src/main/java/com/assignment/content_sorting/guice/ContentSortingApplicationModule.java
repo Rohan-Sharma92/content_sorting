@@ -45,7 +45,7 @@ public class ContentSortingApplicationModule extends AbstractModule {
 	protected void configure() {
 		install(new FactoryModuleBuilder().implement(IFileProcessEnqueuer.class, FileSplittingEnqueuer.class)
 				.build(IFileSplittingEnqueuerFactory.class));
-		install(new FactoryModuleBuilder().implement(new TypeLiteral<IFileTask<Boolean>>() {
+		install(new FactoryModuleBuilder().implement(new TypeLiteral<IFileTask<Void>>() {
 		}, FileReaderTask.class).build(IFileReaderTaskFactory.class));
 		install(new FactoryModuleBuilder().implement(new TypeLiteral<IFileTask<Void>>() {
 		}, FileSplitterTask.class).build(IFileSplitterTaskFactory.class));

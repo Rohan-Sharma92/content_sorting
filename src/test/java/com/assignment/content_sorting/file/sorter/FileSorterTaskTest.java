@@ -40,7 +40,7 @@ public class FileSorterTaskTest {
 
 			@Override
 			protected void configure() {
-				install(new FactoryModuleBuilder().implement(new TypeLiteral<IFileTask<Boolean>>() {
+				install(new FactoryModuleBuilder().implement(new TypeLiteral<IFileTask<Void>>() {
 				}, FileReaderTask.class).build(IFileReaderTaskFactory.class));
 			}
 		});

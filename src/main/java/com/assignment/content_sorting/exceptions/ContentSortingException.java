@@ -7,7 +7,11 @@ public class ContentSortingException extends Exception {
 	 */
 	private static final long serialVersionUID = 3731437672744195438L;
 
-	public ContentSortingException(String messsage, Throwable cause) {
-		super(messsage, cause);
+	public ContentSortingException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public ContentSortingException(String message) {
+		super(message);
 	}
 }

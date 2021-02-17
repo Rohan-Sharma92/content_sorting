@@ -9,14 +9,14 @@ import com.assignment.content_sorting.file.reader.IFileWrapper;
 
 public class MockFileReaderTaskFactory implements IFileReaderTaskFactory {
 
-	private Iterator<MockFileTask<Boolean>> iterator;
+	private Iterator<MockFileTask<Void>> iterator;
 
-	public void setExpectedTask(List<MockFileTask<Boolean>> tasks) {
+	public void setExpectedTask(List<MockFileTask<Void>> tasks) {
 		iterator = tasks.iterator();
 	}
 
 	@Override
-	public IFileTask<Boolean> createReader(IFileWrapper fileWrapper) {
+	public IFileTask<Void> createReader(IFileWrapper fileWrapper) {
 		return iterator.next();
 	}
 

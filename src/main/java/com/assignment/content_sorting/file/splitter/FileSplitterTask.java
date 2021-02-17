@@ -1,6 +1,7 @@
 package com.assignment.content_sorting.file.splitter;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
@@ -40,7 +41,7 @@ public class FileSplitterTask extends FileWriterTask implements IFileTask<Void> 
 		return null;
 	}
 
-	private void process(String line) {
+	private void process(String line) throws IOException {
 		if (StringUtils.isAllBlank(line) || StringUtils.isAllEmpty(line))
 			return;
 		File file = getFile(line);

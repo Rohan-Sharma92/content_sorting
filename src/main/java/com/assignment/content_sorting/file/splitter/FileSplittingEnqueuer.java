@@ -32,14 +32,15 @@ public class FileSplittingEnqueuer implements IFileProcessEnqueuer {
 		this.fileSplitterTaskFactory = fileSplitterTaskFactory;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.assignment.content_sorting.file.splitter.IFileProcessEnqueuer#enqueue(com.assignment.content_sorting.file.reader.IFileWrapper)
+	 */
 	@Override
-	public CompletableFuture<IFileWrapper> enqueue(final IFileWrapper fileWrapper) {
-		triggerReadingTask(fileWrapper);
+	public CompletableFuture<Void> enqueue(final IFileWrapper fileWrapper) {
 		List<CompletableFuture<Void>> futures = new ArrayList<>();
+		futures.add(triggerReadingTask(fileWrapper));
 		triggerSplittingTasks(fileWrapper, futures);
-		return CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()])).thenApply(obj -> {
-			return fileWrapper;
-		});
+		return CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]));
 	}
 
 	private void triggerSplittingTasks(final IFileWrapper fileWrapper, List<CompletableFuture<Void>> futures) {
@@ -56,9 +57,9 @@ public class FileSplittingEnqueuer implements IFileProcessEnqueuer {
 		}
 	}
 
-	private void triggerReadingTask(final IFileWrapper fileWrapper) {
-		CompletableFuture.supplyAsync(() -> {
-			IFileTask<Boolean> readerTask = fileReaderTaskFactory.createReader(fileWrapper);
+	private CompletableFuture<Void> triggerReadingTask(final IFileWrapper fileWrapper) {
+		return CompletableFuture.supplyAsync(() -> {
+			IFileTask<Void> readerTask = fileReaderTaskFactory.createReader(fileWrapper);
 			try {
 				return readerTask.call();
 			} catch (Exception e) {

@@ -15,7 +15,6 @@ public class BufferedReaderWrapper implements Comparable<BufferedReaderWrapper>{
 		try {
 			this.line=bufferedReader.readLine();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

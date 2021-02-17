@@ -6,6 +6,6 @@ import com.assignment.content_sorting.file.reader.IFileWrapper;
 
 public interface IFileProcessEnqueuer {
 
-	public CompletableFuture<IFileWrapper> enqueue(final IFileWrapper fileWrapper);
+	public CompletableFuture<Void> enqueue(final IFileWrapper fileWrapper);
 
 }

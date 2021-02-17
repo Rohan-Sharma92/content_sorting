@@ -6,5 +6,5 @@ import com.google.inject.assistedinject.Assisted;
 
 public interface IFileReaderTaskFactory {
 
-	public IFileTask<Boolean> createReader(@Assisted final IFileWrapper fileWrapper);
+	public IFileTask<Void> createReader(@Assisted final IFileWrapper fileWrapper);
 }
