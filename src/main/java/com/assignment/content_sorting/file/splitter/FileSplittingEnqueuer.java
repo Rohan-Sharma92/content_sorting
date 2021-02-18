@@ -42,7 +42,7 @@ public class FileSplittingEnqueuer implements IFileProcessEnqueuer {
 	 * @param fileSplitterTaskFactory the file splitter task factory
 	 */
 	@Inject
-	public FileSplittingEnqueuer(@Named("FileSplittingExecutor") final ExecutorService fileSplittingPool,
+	public FileSplittingEnqueuer(@Named("ContentSortingExecutor") final ExecutorService fileSplittingPool,
 			final IServerConfig config, final IFileReaderTaskFactory fileReaderTaskFactory,
 			final IFileSplitterTaskFactory fileSplitterTaskFactory) {
 		this.fileSplittingPool = fileSplittingPool;

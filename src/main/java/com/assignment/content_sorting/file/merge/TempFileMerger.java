@@ -39,7 +39,7 @@ public class TempFileMerger implements IContentProcessor{
 	 */
 	@Inject
 	public TempFileMerger(final ITempFileCache tempFileCache,
-			final @Named("FileSplittingExecutor") ExecutorService mergePool,
+			final @Named("ContentSortingExecutor") ExecutorService mergePool,
 			final IFileMergeTaskFactory mergeTaskFactory) {
 		this.tempFileCache = tempFileCache;
 		this.mergePool=mergePool;

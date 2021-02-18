@@ -4,6 +4,7 @@ import com.assignment.content_sorting.guice.ContentSortingApplicationModule;
 import com.assignment.content_sorting.service.ContentSortingService;
 import com.assignment.content_sorting.service.IService;
 import com.assignment.content_sorting.service.InitialisationService;
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
@@ -23,10 +24,16 @@ public class FileContentSortingApplication
      */
     public static void main( String[] args )
     {
-    	Injector injector = Guice.createInjector(new ContentSortingApplicationModule());
+    	FileContentSortingApplication application = new FileContentSortingApplication();
+    	application.execute(new ContentSortingApplicationModule());
+    }
+    
+    public void execute(AbstractModule module) {
+    	Injector injector = Guice.createInjector(module);
     	IService initialisationService = injector.getInstance(InitialisationService.class);
     	IService contentService = injector.getInstance(ContentSortingService.class);
     	initialisationService.addDependencies(contentService);
     	initialisationService.start();
-    }
+
+	}
 }

@@ -10,23 +10,27 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
 import com.assignment.content_sorting.file.cache.ITempFileCache;
+import com.assignment.content_sorting.file.writer.FileWriterTask;
 import com.assignment.content_sorting.properties.IServerConfig;
 import com.assignment.content_sorting.service.IContentProcessor;
 import com.google.inject.Inject;
 
 /**
  * The Class ProcessedFileMerger.
+ * 
  * @author Rohan
  */
 public class ProcessedFileMerger implements IContentProcessor {
 
 	/** The Constant OUTPUT_TXT. */
-	public static final String OUTPUT_TXT = "output.txt";
-	
+	public static final String OUTPUT_TXT = "/output.txt";
+
 	/** The temp file cache. */
 	private final ITempFileCache tempFileCache;
-	
+
 	/** The server config. */
 	private final IServerConfig serverConfig;
 
@@ -34,7 +38,7 @@ public class ProcessedFileMerger implements IContentProcessor {
 	 * Instantiates a new processed file merger.
 	 *
 	 * @param tempFileCache the temp file cache
-	 * @param serverConfig the server config
+	 * @param serverConfig  the server config
 	 */
 	@Inject
 	public ProcessedFileMerger(final ITempFileCache tempFileCache, final IServerConfig serverConfig) {
@@ -42,7 +46,9 @@ public class ProcessedFileMerger implements IContentProcessor {
 		this.serverConfig = serverConfig;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.assignment.content_sorting.service.IContentProcessor#process()
 	 */
 	@Override
@@ -52,7 +58,8 @@ public class ProcessedFileMerger implements IContentProcessor {
 			outputDir.mkdirs();
 		try {
 			Arrays.stream(outputDir.listFiles()).forEach(file -> file.delete());
-			File outputFile = new File(outputDir, OUTPUT_TXT);
+			File outputFile = new File(serverConfig.getTempDirectory(),
+					RandomStringUtils.randomAlphanumeric(4)+".txt");
 			BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputFile, false));
 			for (String fileName : tempFileCache.getTempFileNames()) {
 				File tempFile = tempFileCache.getTempFile(fileName);
@@ -68,6 +75,8 @@ public class ProcessedFileMerger implements IContentProcessor {
 				br.close();
 			}
 			bufferedWriter.close();
+			File destination = Paths.get(outputDir + OUTPUT_TXT).toFile();
+			new FileWriterTask().move(outputFile, destination);
 			return CompletableFuture.completedFuture(null);
 		} catch (IOException exception) {
 

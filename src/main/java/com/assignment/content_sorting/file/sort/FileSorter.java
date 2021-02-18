@@ -38,7 +38,7 @@ public class FileSorter implements IContentProcessor {
 	 */
 	@Inject
 	public FileSorter(final ITempFileCache tempFileCache,
-			final @Named("FileSplittingExecutor") ExecutorService threadPool,
+			final @Named("ContentSortingExecutor") ExecutorService threadPool,
 			final IFileSorterTaskFactory fileSorterTaskFactory) {
 		this.tempFileCache = tempFileCache;
 		this.threadPool = threadPool;
