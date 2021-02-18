@@ -1,5 +1,11 @@
+Prerequisites
+-------------------------
+1. Platform : Java (JDK 1.8)
+2. Build Tool : Maven 
+3. IDE : Eclipse
+
 Build instructions:
---------------------------
+-------------------------
  Run the following command:
  1. mvn clean install
    
@@ -7,7 +13,7 @@ Build instructions:
    
    
 Running instructions
-------------------------
+-------------------------
 1. To run the application, copy the jar to a working directory.
 2. Then create another directory named 'config' and a 'server.properties' file in it. The properties can be specified in the following format as shown in the example below:
    listen=<Absolute path of directory containing input files>
