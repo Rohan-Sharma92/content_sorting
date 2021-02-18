@@ -1,4 +1,4 @@
-package com.assignment.content_sorting.validation.engine;
+package com.assignment.content_sorting.validation;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
