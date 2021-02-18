@@ -1,3 +1,6 @@
+Approach
+--------------------------
+
 Most of the sorting algorithms require the dataset to be load them into memory and then perform the sorting operation. This approach is quite fast and works for small datasets, however, for large datasets (of sizes more than 1GB), this approach becomes inefficient and is not scalable.
 Therefore, I have tried to develop an implementation of external sort algorithm.
 In this algorithm, the input files are splitted into small chunks (depending on how much RAM is available) and then written off to the disk. These chunks are then sorted individually and merged together to give the sorted result.
