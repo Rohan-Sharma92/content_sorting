@@ -26,7 +26,7 @@ public interface IFileWrapper extends IFileReaderQueueHandler{
 	 *
 	 * @return true, if is file read
 	 */
-	public boolean isFileRead();
+	public boolean isFileReadComplete();
 	
 	/**
 	 * Mark file complete.

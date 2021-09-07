@@ -1,7 +1,11 @@
 package com.assignment.content_sorting.guice;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import javax.inject.Named;
 
@@ -51,6 +55,17 @@ public class ContentSortingApplicationModule extends AbstractApplicationModule {
 	@Named("ContentSortingExecutor")
 	public ExecutorService getExecutorService(final IServerConfig serverConfig) {
 		return Executors.newFixedThreadPool(serverConfig.getConcurrencyLevel());
+	}
+
+	@Provides
+	@Singleton
+	@Named("AppLogger")
+	public Logger getLogger() throws SecurityException, IOException {
+		Logger logger = Logger.getLogger("ContentSorting");
+		FileHandler handler = new FileHandler("./Application.log");
+		handler.setFormatter(new SimpleFormatter());
+		logger.addHandler(handler);
+		return logger;
 	}
 
 }

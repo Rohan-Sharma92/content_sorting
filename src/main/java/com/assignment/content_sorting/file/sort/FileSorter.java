@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Named;
 
@@ -29,6 +31,8 @@ public class FileSorter implements IContentProcessor {
 	/** The file sorter task factory. */
 	private final IFileSorterTaskFactory fileSorterTaskFactory;
 
+	private final Logger logger;
+
 	/**
 	 * Instantiates a new file sorter.
 	 *
@@ -39,10 +43,12 @@ public class FileSorter implements IContentProcessor {
 	@Inject
 	public FileSorter(final ITempFileCache tempFileCache,
 			final @Named("ContentSortingExecutor") ExecutorService threadPool,
-			final IFileSorterTaskFactory fileSorterTaskFactory) {
+			final IFileSorterTaskFactory fileSorterTaskFactory,
+			final @Named("AppLogger")Logger logger) {
 		this.tempFileCache = tempFileCache;
 		this.threadPool = threadPool;
 		this.fileSorterTaskFactory = fileSorterTaskFactory;
+		this.logger = logger;
 	}
 
 	/**
@@ -55,6 +61,7 @@ public class FileSorter implements IContentProcessor {
 			File tempFile = tempFileCache.getTempFile(name);
 			futures.add(CompletableFuture.<Void>supplyAsync(() -> {
 				try {
+					logger.log(Level.INFO,"Sorting file..."+tempFile.getName());
 					return fileSorterTaskFactory.createSorter(tempFile)
 							.call();
 				} catch (Exception e) {

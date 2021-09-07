@@ -55,7 +55,7 @@ public class SortedFileWrapper implements IFileWrapper {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean isFileRead() {
+	public boolean isFileReadComplete() {
 		return this.buffer.isEmpty();
 	}
 

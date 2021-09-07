@@ -9,6 +9,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.inject.Named;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -34,6 +38,8 @@ public class ProcessedFileMerger implements IContentProcessor {
 	/** The server config. */
 	private final IServerConfig serverConfig;
 
+	private final Logger logger;
+
 	/**
 	 * Instantiates a new processed file merger.
 	 *
@@ -41,9 +47,11 @@ public class ProcessedFileMerger implements IContentProcessor {
 	 * @param serverConfig  the server config
 	 */
 	@Inject
-	public ProcessedFileMerger(final ITempFileCache tempFileCache, final IServerConfig serverConfig) {
+	public ProcessedFileMerger(final ITempFileCache tempFileCache, final IServerConfig serverConfig,
+			final @Named("AppLogger") Logger logger) {
 		this.tempFileCache = tempFileCache;
 		this.serverConfig = serverConfig;
+		this.logger = logger;
 	}
 
 	/*
@@ -53,6 +61,7 @@ public class ProcessedFileMerger implements IContentProcessor {
 	 */
 	@Override
 	public CompletableFuture<Void> process() {
+		logger.log(Level.INFO,"Performing final merge");
 		File outputDir = Paths.get(serverConfig.getOutputDirectory()).toFile();
 		if (!outputDir.exists())
 			outputDir.mkdirs();
@@ -79,7 +88,7 @@ public class ProcessedFileMerger implements IContentProcessor {
 			new FileWriterTask().move(outputFile, destination);
 			return CompletableFuture.completedFuture(null);
 		} catch (IOException exception) {
-
+			logger.log(Level.SEVERE,"Exception while writing file"+exception.getMessage());
 		}
 		return null;
 	}

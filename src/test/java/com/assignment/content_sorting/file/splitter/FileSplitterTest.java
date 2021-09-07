@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Logger;
 
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -29,7 +30,7 @@ public class FileSplitterTest {
 		properties.put(ServerConfig.TEMP, "target/temp");
 		config = new ServerConfig(properties);
 		fileSplittingEnqueuerFactory = new MockFileSplittingEnqueuerFactory();
-		fileSplitter = new FileSplitter(config, fileSplittingEnqueuerFactory);
+		fileSplitter = new FileSplitter(config, fileSplittingEnqueuerFactory,Logger.getLogger(""));
 	}
 
 	@AfterMethod

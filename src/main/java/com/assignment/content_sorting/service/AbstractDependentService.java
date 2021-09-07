@@ -24,7 +24,7 @@ public abstract class AbstractDependentService implements IService {
 	 * Notify availability.
 	 */
 	protected void notifyAvailability() {
-		this.dependentServices.stream().forEach(Service -> Service.start());
+		this.dependentServices.stream().forEach(service -> service.start());
 	}
 	
 	/**

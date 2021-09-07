@@ -52,7 +52,7 @@ public class FileSplitterTask extends FileWriterTask implements IFileTask<Void> 
 	 */
 	@Override
 	public Void call() throws Exception {
-		while (!fileWrapper.isFileRead() || (fileWrapper.isFileRead() && !fileWrapper.isBufferEmpty())) {
+		while (!fileWrapper.isFileReadComplete() || (fileWrapper.isFileReadComplete() && !fileWrapper.isBufferEmpty())) {
 			String line = fileWrapper.readLine();
 			if (line != null) {
 				process(line);

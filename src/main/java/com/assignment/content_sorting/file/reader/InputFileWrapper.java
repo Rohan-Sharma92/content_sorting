@@ -51,7 +51,7 @@ public class InputFileWrapper implements IFileWrapper {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean isFileRead() {
+	public boolean isFileReadComplete() {
 		return this.isFileRead.get();
 	}
 

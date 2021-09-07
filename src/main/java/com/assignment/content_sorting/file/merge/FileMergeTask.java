@@ -77,7 +77,6 @@ public class FileMergeTask implements IFileTask<Void> {
 		if (!tempDir.exists()) {
 			tempDir.mkdirs();
 		}
-
 		File outputFile = new File(tempDir, fileName);
 		BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputFile));
 		SortedList<BufferedReaderWrapper> sortedList = getAutoSortedList();
@@ -123,6 +122,12 @@ public class FileMergeTask implements IFileTask<Void> {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	private SortedList<BufferedReaderWrapper> getAutoSortedList() throws IOException {
+		/*
+		 * There is a small possibility of having too many splitted files
+		 * and reading first line from each of them. This may cause increased memory consumption,
+		 * so can be optimized.
+		 * For e.g. 1 million files starting with same character
+		 */
 		SortedList<BufferedReaderWrapper> sortedList = new SortedList<>();
 		for (File file : fragments) {
 			BufferedReaderWrapper reader = new BufferedReaderWrapper(

@@ -6,7 +6,11 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import javax.inject.Named;
 
 import com.assignment.content_sorting.file.factories.IFileSplittingEnqueuerFactory;
 import com.assignment.content_sorting.file.reader.IFileWrapper;
@@ -26,6 +30,8 @@ public class FileSplitter implements IContentProcessor {
 	/** The file splitting enqueuer factory. */
 	private final IFileSplittingEnqueuerFactory fileSplittingEnqueuerFactory;
 
+	private final Logger logger;
+
 	/**
 	 * Instantiates a new file splitter.
 	 *
@@ -33,9 +39,11 @@ public class FileSplitter implements IContentProcessor {
 	 * @param fileSplittingEnqueuerFactory the file splitting enqueuer factory
 	 */
 	@Inject
-	public FileSplitter(final IServerConfig config, final IFileSplittingEnqueuerFactory fileSplittingEnqueuerFactory) {
+	public FileSplitter(final IServerConfig config, final IFileSplittingEnqueuerFactory fileSplittingEnqueuerFactory,
+			final @Named("AppLogger") Logger logger) {
 		this.config = config;
 		this.fileSplittingEnqueuerFactory = fileSplittingEnqueuerFactory;
+		this.logger = logger;
 	}
 
 	/**
@@ -50,6 +58,7 @@ public class FileSplitter implements IContentProcessor {
 						return b.getFileSize() > a.getFileSize() ? 1 : 0;
 					}
 				}).collect(Collectors.toList());
+		logger.log(Level.INFO,"Splitting files..."+ "Count:"+wrappedFiles.size());
 		List<CompletableFuture<Void>> futures = wrappedFiles.stream().map(file -> process(file))
 				.collect(Collectors.toList());
 		return CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[futures.size()]));

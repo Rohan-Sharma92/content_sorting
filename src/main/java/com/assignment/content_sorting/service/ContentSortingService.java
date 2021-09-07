@@ -1,6 +1,8 @@
 package com.assignment.content_sorting.service;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Named;
 
@@ -13,6 +15,8 @@ import com.google.inject.Inject;
  * @author Rohan
  */
 public class ContentSortingService extends AbstractDependentService {
+
+	private static final String LOG_KEY = "Content Sorting Process";
 
 	/** The file splitter. */
 	private final IContentProcessor fileSplitter;
@@ -32,6 +36,8 @@ public class ContentSortingService extends AbstractDependentService {
 	/** The timer task. */
 	private final TimerTask timerTask;
 
+	private final Logger logger;
+
 	/**
 	 * Instantiates a new content sorting service.
 	 *
@@ -46,13 +52,15 @@ public class ContentSortingService extends AbstractDependentService {
 			final @Named("FileSorter") IContentProcessor fileSorter,
 			final @Named("TempFileMerge") IContentProcessor fileMerger,
 			final @Named("ProcessedFileMerge") IContentProcessor processedFileMerger,
-			final ITempFileCache tempFileCache) {
+			final ITempFileCache tempFileCache,
+			final @Named("AppLogger") Logger logger) {
 		this.fileSplitter = fileSplitter;
 		this.fileSorter = fileSorter;
 		this.fileMerger = fileMerger;
 		this.processedFileMerger = processedFileMerger;
 		this.tempFileCache = tempFileCache;
-		this.timerTask = new TimerTask("Content Sorting Process");
+		this.logger = logger;
+		this.timerTask = new TimerTask(LOG_KEY,logger);
 	}
 
 	/**
@@ -67,7 +75,7 @@ public class ContentSortingService extends AbstractDependentService {
 		 * k files into output file
 		 * 
 		 */
-		System.out.println("Started processing");
+		logger.info("Started processing");
 		timerTask.start();
 		final CompletableFuture<Void> splitResult = fileSplitter.process();
 		splitResult.whenComplete((res, ex) -> {
@@ -88,7 +96,7 @@ public class ContentSortingService extends AbstractDependentService {
 	 * @param ex the ex
 	 */
 	private void handleException(String msg, Throwable ex) {
-		System.out.println(msg + ex.getMessage());
+		logger.log(Level.SEVERE, msg, ex);
 	}
 
 	/**

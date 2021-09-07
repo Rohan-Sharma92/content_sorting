@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Named;
 
@@ -33,6 +35,8 @@ public class FileSplittingEnqueuer implements IFileProcessEnqueuer {
 	/** The file reader task factory. */
 	private final IFileReaderTaskFactory fileReaderTaskFactory;
 
+	private final Logger logger;
+
 	/**
 	 * Instantiates a new file splitting enqueuer.
 	 *
@@ -44,11 +48,13 @@ public class FileSplittingEnqueuer implements IFileProcessEnqueuer {
 	@Inject
 	public FileSplittingEnqueuer(@Named("ContentSortingExecutor") final ExecutorService fileSplittingPool,
 			final IServerConfig config, final IFileReaderTaskFactory fileReaderTaskFactory,
-			final IFileSplitterTaskFactory fileSplitterTaskFactory) {
+			final IFileSplitterTaskFactory fileSplitterTaskFactory,
+			final @Named("AppLogger") Logger logger) {
 		this.fileSplittingPool = fileSplittingPool;
 		this.config = config;
 		this.fileReaderTaskFactory = fileReaderTaskFactory;
 		this.fileSplitterTaskFactory = fileSplitterTaskFactory;
+		this.logger = logger;
 	}
 
 	/**
@@ -73,6 +79,7 @@ public class FileSplittingEnqueuer implements IFileProcessEnqueuer {
 			CompletableFuture<Void> completableFuture = CompletableFuture.<Void>supplyAsync(() -> {
 				IFileTask<Void> writerTask = fileSplitterTaskFactory.createSplitter(fileWrapper);
 				try {
+					logger.log(Level.FINE,"Splitting file..."+ fileWrapper.getFile().getName());
 					return writerTask.call();
 				} catch (Exception e) {
 					throw new CompletionException(e);
@@ -92,6 +99,7 @@ public class FileSplittingEnqueuer implements IFileProcessEnqueuer {
 		return CompletableFuture.supplyAsync(() -> {
 			IFileTask<Void> readerTask = fileReaderTaskFactory.createReader(fileWrapper);
 			try {
+				logger.log(Level.FINE,"Reading file..."+ fileWrapper.getFile().getName());
 				return readerTask.call();
 			} catch (Exception e) {
 				throw new CompletionException(e);

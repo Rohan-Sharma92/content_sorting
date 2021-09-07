@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -35,7 +36,7 @@ public class ProcessedFileMergerTest {
 		props.put(ServerConfig.OUTPUT, "target/output");
 		props.put(ServerConfig.TEMP, "target/test");
 		config = new ServerConfig(props);
-		fileMerger = new ProcessedFileMerger(tempFileCache, config);
+		fileMerger = new ProcessedFileMerger(tempFileCache, config,Logger.getLogger(""));
 	}
 
 	@AfterMethod

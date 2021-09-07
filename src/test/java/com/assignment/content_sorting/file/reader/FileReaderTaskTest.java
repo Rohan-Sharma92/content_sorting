@@ -21,7 +21,7 @@ public class FileReaderTaskTest {
 		IFileWrapper fileWrapper= new InputFileWrapper(TestUtils.writeFile("abc\n"+"bdfg", "test",config));
 		fileReaderTask = new FileReaderTask(fileWrapper,new MockValidationEngine<>());
 		fileReaderTask.call();
-		Assert.assertTrue(fileWrapper.isFileRead());
+		Assert.assertTrue(fileWrapper.isFileReadComplete());
 	}
 	
 	

@@ -1,5 +1,7 @@
 package com.assignment.content_sorting.util;
 
+import java.util.logging.Logger;
+
 /**
  * The Class TimerTask.
  * @author Rohan
@@ -15,13 +17,17 @@ public class TimerTask {
 	/** The stage start. */
 	private Long stageStart;
 
+	private Logger logger;
+
 	/**
 	 * Instantiates a new timer task.
 	 *
 	 * @param name the name
+	 * @param logger 
 	 */
-	public TimerTask(String name) {
+	public TimerTask(String name, Logger logger) {
 		this.name = name;
+		this.logger = logger;
 	}
 
 	/**
@@ -39,7 +45,7 @@ public class TimerTask {
 	 */
 	public void completeStage(String stage) {
 		Long end = System.currentTimeMillis();
-		System.out.println("Stage: " + stage + "\t TimeTaken: " + (end - stageStart) + " ms.");
+		logger.info("Stage: " + stage + "\t TimeTaken: " + (end - stageStart) + " ms.");
 		this.stageStart=end;
 	}
 	
@@ -48,6 +54,6 @@ public class TimerTask {
 	 */
 	public void processingComplete() {
 		Long end = System.currentTimeMillis();
-		System.out.println("Completed "+name+ "\t TimeTaken: " + (end - start) + " ms.");
+		logger.info("Completed "+name+ "\t TimeTaken: " + (end - start) + " ms.");
 	}
 }

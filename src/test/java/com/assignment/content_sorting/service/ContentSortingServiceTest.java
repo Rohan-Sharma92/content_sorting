@@ -1,5 +1,7 @@
 package com.assignment.content_sorting.service;
 
+import java.util.logging.Logger;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -18,7 +20,7 @@ public class ContentSortingServiceTest {
 		MockContentProcessor processedFileMerger= new MockContentProcessor();
 		TempFileCache tempFileCache = new TempFileCache();
 		contentSortingService = new ContentSortingService(fileSplitter, fileSorter, fileMerger, processedFileMerger,
-				tempFileCache);
+				tempFileCache,Logger.getLogger(""));
 		contentSortingService.start();
 		Assert.assertTrue(fileSplitter.isProgress());
 		Assert.assertFalse(fileSorter.isProgress());
