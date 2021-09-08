@@ -1,3 +1,4 @@
+
 package com.assignment.content_sorting.properties;
 
 import com.assignment.content_sorting.exceptions.ContentSortingException;
@@ -15,4 +16,10 @@ public interface IPropertiesLoader {
 	 * @throws ContentSortingException the content sorting exception
 	 */
 	public IServerConfig loadConfig() throws ContentSortingException;
+
+	/**
+	 * Load logging info.
+	 * @throws ContentSortingException 
+	 */
+	void loadLoggingInfo() throws ContentSortingException;
 }

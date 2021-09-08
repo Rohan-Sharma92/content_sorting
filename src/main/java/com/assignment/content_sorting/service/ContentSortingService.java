@@ -143,7 +143,7 @@ public class ContentSortingService extends AbstractDependentService {
 				tempFileCache.purgeTempFiles();
 			}
 			timerTask.processingComplete();
-			System.out.println("Processing complete");
+			logger.info("Processing complete");
 		});
 	}
 

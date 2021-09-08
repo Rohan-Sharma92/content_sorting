@@ -15,7 +15,7 @@ Build instructions:
 Deployment instructions
 -------------------------
 1. To run the application, copy the jar to a working directory.
-2. Then create another directory named 'config' and a 'server.properties' file in it. The properties can be specified in the following format as shown in the example below:
+2. Then create another directory named 'config' with two files 'server.properties' and 'logging.properties' in it. The properties can be specified in the following format as shown in the example below:
    listen=<Absolute path of directory containing input files>
 3. If no properties are specified, then create a directory named 'listen' in the working directory and copy the input files in this directory.
 4. Run the application with following command:

@@ -14,6 +14,7 @@ import com.assignment.content_sorting.properties.IPropertiesLoader;
 import com.assignment.content_sorting.properties.IServerConfig;
 import com.assignment.content_sorting.properties.PropertiesLoader;
 import com.google.inject.Provides;
+import com.google.inject.Scopes;
 import com.google.inject.Singleton;
 
 /**
@@ -28,6 +29,7 @@ public class ContentSortingApplicationModule extends AbstractApplicationModule {
 	 */
 	@Override
 	protected void configure() {
+		bind(IPropertiesLoader.class).to(PropertiesLoader.class).in(Scopes.SINGLETON);
 		super.configure();
 	}
 
@@ -39,8 +41,7 @@ public class ContentSortingApplicationModule extends AbstractApplicationModule {
 	 */
 	@Provides
 	@Singleton
-	public IServerConfig getConfig() throws ContentSortingException {
-		IPropertiesLoader propertiesLoader = new PropertiesLoader();
+	public IServerConfig getConfig(final IPropertiesLoader propertiesLoader) throws ContentSortingException {
 		return propertiesLoader.loadConfig();
 	}
 
@@ -60,10 +61,13 @@ public class ContentSortingApplicationModule extends AbstractApplicationModule {
 	@Provides
 	@Singleton
 	@Named("AppLogger")
-	public Logger getLogger() throws SecurityException, IOException {
+	public Logger getLogger(final IPropertiesLoader propertiesLoader)
+			throws SecurityException, IOException, ContentSortingException {
+		propertiesLoader.loadLoggingInfo();
 		Logger logger = Logger.getLogger("ContentSorting");
 		FileHandler handler = new FileHandler("./Application.log");
-		handler.setFormatter(new SimpleFormatter());
+		SimpleFormatter formatter = new SimpleFormatter();
+		handler.setFormatter(formatter);
 		logger.addHandler(handler);
 		return logger;
 	}

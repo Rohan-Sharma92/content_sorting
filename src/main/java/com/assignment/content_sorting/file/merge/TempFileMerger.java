@@ -66,7 +66,7 @@ public class TempFileMerger implements IContentProcessor {
 					futures.add(CompletableFuture.supplyAsync(() -> {
 						try {
 							logger.log(Level.INFO,
-									"Merging files..." + "MergedFile:" + fileName + "Fragments:" + fragments.size());
+									"Merging files..." + "MergedFile: " + fileName + " Fragments:" + fragments.size());
 							return mergeTaskFactory.createMergeTask(fileName, fragments).call();
 						} catch (Exception e) {
 							throw new CompletionException(e);
